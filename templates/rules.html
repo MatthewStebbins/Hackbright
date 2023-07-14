@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block title %}--Welcome to The Siren{% endblock %}
+
+{% block content %}
+<div class="header_container">
+  <!-- <div id = potriat>
+    <h2>{{name}}</h2>
+    <img src={{image}}>
+  </div> -->
+  <div></div>
+  <div id = text>
+    <h1 class = "banner"><center>--Welcome to The Siren</center></h1>
+  </div>
+</div>
+<div class="action_bar">
+  <center>
+    <form action="/">
+      <button class = "rules_button">Back</button>
+    </form>
+  </center>
+</div>
+<div class="main">
+    <div></div>
+    <div class="rules">
+    <center>
+        <h2> How to play: </h2>
+        <p><h4>How to win:</h4><br>
+          You win by defeating all the aliens in two ships. You do this by being the last player to not pass and using the equipment the crew person has left after the bidding phase.<br>
+         Or<br>
+          By being the last player to not fail two ships</p>
+         
+         <p><h4>How to Loss:</h4><br>
+          You can loss by another player winning or by failing twice when going into ships.</p>
+         
+         <p><h4>How to Play:</h4><br>
+         This game takes place over multiple rounds. Each round is broken down into two phases.<br>
+         &bull; The building phase.<br>
+         &bull; The ship phase.<br><br>
+         <h5> building phase:</h5><br>
+          During this phase you have two options<br>
+         &bull; Draw an alien card<br>
+         &bull; Pass your turn<br><br>
+         Draw an alien card<br>
+         If you draw a card, you can<br>
+         &bull; Add that alien to the ship <br>
+         o This adds the alien to the deck of aliens you have to deal with if you enter the ship<br>
+         &bull; Discard the alien card<br>
+         o If you discard an alien card you must remove a piece of the crew equipment<br>
+         <br>Pass your turn:<br>
+         If you pass your turn you no longer participate in this round and no longer draw cards till the next round. <br>
+        <br><h5>The Ship phase:</h5><br>
+          Only the player that didn&rsquo;t pass in the bidding phase this round takes part of this phase. In this phase you can use the remaining equipment to help you from not loss HP by getting hurt.<br>
+          If you handle all the aliens in the ship and you still have one or more HP, you succeed. If you successfully make it through two ships you win the game!<br>
+         If your HP us zero or less you fail to clear the ship of aliens. If you fail on two ships you are eliminated from the game. <br>
+         <br><h4>New round:</h4><br>
+          If nobody won then a new round starts with a new bidding phase.<br>
+         </p>
+    </center>
+    </div>
+    <div></div>
+</div>
+{% endblock %}

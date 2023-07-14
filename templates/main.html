@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}--Welcome to The Siren{% endblock %}
+
+{% block content %}
+<div class="header_container">
+  <!-- <div id = potriat>
+    <h2>{{name}}</h2>
+    <img src={{image}}>
+  </div> -->
+  <div></div>
+  <div id = text>
+    <h1 class = "banner"><center>--Welcome to The Siren</center></h1>
+  </div>
+</div>
+<div class="action_bar">
+  <center>
+    <form action="/rules">
+      <button class = "rules_button">Rules</button>
+    </form>
+  </center>
+</div>
+<div class="main">
+  <div></div>
+  <div class= "lobby">
+    <center>
+      <p><h4>Getting Started:</h4><br>
+        <h5>To Host a room</h5><br>
+       Step 1 - Click &ldquo;Create Room&rdquo;<br>
+       Step 2 - Pick a crew member for your game. If this is your first game, we suggest The Gunner.<br>
+       Step 3 &ndash; Provide room code to the other players.</p>
+       <form action="/create-room">
+        <button class="rules_button">Create Room</button>
+       </form><br>
+       <p><h5>To Join a room</h5><br>
+       Step 1 &ndash; Enter the room code, provided by the host, into the room code field and click join.<br>
+       </p>
+       <form action="/join-room">
+        <input type="text" name="room" class="room">
+        <button class="rules_button">Join</button>
+       </form>
+    </center>
+  </div>
+  <div></div>
+</div>
+{% endblock %}

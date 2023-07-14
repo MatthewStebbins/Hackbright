@@ -1,0 +1,105 @@
+@import url('https://fonts.googleapis.com/css2?family=Syne+Mono&display=swap');
+
+body {
+    background: rgb(6,44,67);
+    background: radial-gradient(circle, rgba(6,44,67,1) 0%, rgba(6,44,67,1) 31%, rgba(85,145,169,1) 100%);
+
+    background-image: url("/static/img/nasa-cIX5TlQ_FgM-unsplash.jpg");
+    background-repeat: no-repeat;
+    background-position:  top;
+    background-size: auto auto;
+    background-color: rgb(6,44,67);
+}
+
+.header_container {
+    background: rgb(6,44,67);
+    background: linear-gradient(90deg, rgba(6,44,67,1) 0%, rgba(6,44,67,1) 31%, rgba(85,145,169,1) 100%);
+    opacity: 0.8;
+    min-height: 300px;
+    max-height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+#potriat {
+    max-width: 100%;
+    max-height:100%;
+}
+
+.banner {
+    font-family: "Syne Mono", monospace;
+    font-size: 600%;
+    color: #ced7e0;
+}
+
+.rules_button {
+	box-shadow:inset 0px 1px 0px 0px #54a3f7;
+	background:linear-gradient(to bottom, #5591a9 5%, #9ccddc 100%);
+	background-color:#5591a9;
+	border-radius:5px;
+	border:1px solid #124d77;
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	font-family:Arial;
+	font-size:16px;
+	padding:6px 24px;
+	text-decoration:none;
+	text-shadow:0px 1px 0px #154682;
+}
+.rules_button:hover {
+	background:linear-gradient(to bottom, #9ccddc 5%, #5591a9 100%);
+	background-color:#9ccddc;
+}
+.rules_button:active {
+	position:relative;
+	top:1px;
+}
+.main {
+    display: flex;
+    justify-content: space-between;
+}
+.rules {
+    background: rgb(6,44,67);
+    background: linear-gradient(0deg, rgba(6,44,67,1) 0%, rgba(6,44,67,1) 31%, rgba(85,145,169,1) 100%);
+    opacity: 0.9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-width: 90em;
+    min-width: 90em;
+    overflow-wrap: break-word;
+    padding: 1em;
+    padding-left: 20em;
+    padding-right: 20em;
+    margin: 2em;
+    font-family: "Syne Mono", monospace;
+    font-size: 100%;
+    color: #ced7e0;
+}
+
+.lobby {
+    background: rgb(6,44,67);
+    background: linear-gradient(0deg, rgba(6,44,67,1) 0%, rgba(6,44,67,1) 31%, rgba(85,145,169,1) 100%);
+    opacity: 0.9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-width: 90em;
+    min-width: 90em;
+    overflow-wrap: break-word;
+    padding: 1em;
+    padding-left: 20em;
+    padding-right: 20em;
+    margin: 2em;
+    font-family: "Syne Mono", monospace;
+    font-size: 100%;
+    color: #ced7e0;
+}
+
+.room {
+    width: 6em;
+    background-color: #ced7e0; 
+}

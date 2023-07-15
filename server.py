@@ -21,6 +21,14 @@ def api_call():
 def rules():
     return render_template('rules.html')
 
+@app.route("create-room")
+def create_room():
+    return render_template('todo.html')
+
+@app.route("/join-room")
+def join_room():
+    return render_template('todo.html')
+
 if __name__ == '__main__':
 
     app.run(debug=True, host="0.0.0.0")

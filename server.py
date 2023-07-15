@@ -21,7 +21,7 @@ def api_call():
 def rules():
     return render_template('rules.html')
 
-@app.route("create-room")
+@app.route("/create-room")
 def create_room():
     return render_template('todo.html')
 

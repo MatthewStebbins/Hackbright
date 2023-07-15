@@ -99,7 +99,8 @@ body {
     color: #ced7e0;
 }
 
-.room {
+#room {
     width: 6em;
     background-color: #ced7e0; 
+    text-align: center;
 }

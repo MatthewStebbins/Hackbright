@@ -1,7 +1,6 @@
 import requests
-
 from random import choice, randint
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, jsonify
 
 URL = "https://api.jikan.moe/v4/characters?page="
 
@@ -23,10 +22,20 @@ def rules():
 
 @app.route("/create-room")
 def create_room():
-    return render_template('todo.html')
+
+    return jsonify({"status":"success"})
 
 @app.route("/join-room")
 def join_room():
+    roomcode = request.args['room']
+    print(roomcode)
+    if roomcode == '12345':
+        return jsonify({"status":"active", "roomcode":roomcode})
+    else:
+        return jsonify({"status":"inactive", "roomcode":roomcode})
+
+@app.route('/todo')
+def todo():
     return render_template('todo.html')
 
 if __name__ == '__main__':

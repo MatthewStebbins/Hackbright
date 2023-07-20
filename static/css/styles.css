@@ -13,8 +13,7 @@ body {
 
 .header_container {
     background: rgb(6,44,67);
-    background: linear-gradient(90deg, rgba(6,44,67,1) 0%, rgba(6,44,67,1) 31%, rgba(85,145,169,1) 100%);
-    opacity: 0.8;
+    background: linear-gradient(90deg, rgba(6,44,67,0.8) 0%, rgba(6,44,67,0.8) 31%, rgba(85,145,169,0.8) 100%);
     min-height: 300px;
     max-height: 300px;
     display: flex;
@@ -60,11 +59,12 @@ body {
 .main {
     display: flex;
     justify-content: space-between;
+    justify-content: center;
+    align-items: center;
 }
 .rules {
     background: rgb(6,44,67);
-    background: linear-gradient(0deg, rgba(6,44,67,1) 0%, rgba(6,44,67,1) 31%, rgba(85,145,169,1) 100%);
-    opacity: 0.9;
+    background: linear-gradient(0deg, rgba(6,44,67,0.9) 0%, rgba(6,44,67,0.9) 31%, rgba(85,145,169,0.9) 100%);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -82,8 +82,7 @@ body {
 
 .lobby {
     background: rgb(6,44,67);
-    background: linear-gradient(0deg, rgba(6,44,67,1) 0%, rgba(6,44,67,1) 31%, rgba(85,145,169,1) 100%);
-    opacity: 0.9;
+    background: linear-gradient(0deg, rgba(6,44,67,0.9) 0%, rgba(6,44,67,0.9) 31%, rgba(85,145,169,0.9) 100%);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -99,8 +98,53 @@ body {
     color: #ced7e0;
 }
 
+.game {
+    background: rgb(6,44,67);
+    background: linear-gradient(0deg, rgba(6,44,67,0.9) 0%, rgba(6,44,67,0.9) 31%, rgba(85,145,169,0.9) 100%);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    align-content: space-between;
+    max-width: max-content;
+    min-width: 90em;
+    padding: 1em;
+    padding-left: 5em;
+    padding-right: 5em;
+    margin: 2em;
+    font-family: "Syne Mono", monospace;
+    font-size: 100%;
+    color: #ced7e0;
+}
+
 #room {
     width: 6em;
     background-color: #ced7e0; 
+
+}
+
+#potriat {
     text-align: center;
+    width: 250px;
+    margin-top: -100px;
+    margin-left: -125px;
+    margin-right: 10px;
+
+}
+
+#potriat_img {
+    border-radius: 50%;
+    border: 10px outset silver;
+    height: 350px;
+    width: 225px;
+
+}
+
+#potriat_name {
+    color: #ced7e0; 
+}
+
+#flex-cards {
+    justify-content: space-between;
+    margin: 10px;
+    opacity: revert-layer;
 }

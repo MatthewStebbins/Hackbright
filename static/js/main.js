@@ -4,7 +4,6 @@
 // Event listener to handle user entering a room code 
 // and clicking Join button
 function activeRoom(evt) {
-
     console.log('in isActiveRoom');
     const roomcode = document.querySelector('#room').value;
  //   console.log(roomcode);
@@ -19,7 +18,7 @@ function activeRoom(evt) {
             alert(`Room code ${joinRoomJSON.roomcode} is not avalible`);
         }
         else {
-            window.location.replace("/todo");
+            window.location.replace(`/room/${joinRoomJSON.roomcode}`);
         }
     });
 }

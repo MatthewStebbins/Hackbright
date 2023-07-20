@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}Room {{roomcode}}{% endblock %}
+
+{% block content %}
+<div class="action_bar">
+    <center>
+      <form action="/rules">
+        <button class = "rules_button">Rules</button>
+      </form>
+    </center>
+  </div>
+  <div class="main">
+
+  <div class= "game">
+    <div id = potriat>
+        <img id= potriat_img src={{image}}>
+        <h2 id= potriat_name>{{crew}}</h2>
+      </div>
+      {% for num in range(6) %}
+      <div id="flex-cards"><img id="equipment_{{num}}" src="/static/img/200x300 placeholder.png"></div>
+      {% endfor %}
+  </div>
+
+  </div>
+{% endblock %}

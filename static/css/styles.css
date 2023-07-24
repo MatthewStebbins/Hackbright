@@ -22,6 +22,14 @@ body {
 
 }
 
+.action_bar {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+
 #potriat {
     max-width: 100%;
     max-height:100%;
@@ -33,29 +41,7 @@ body {
     color: #ced7e0;
 }
 
-.rules_button {
-	box-shadow:inset 0px 1px 0px 0px #54a3f7;
-	background:linear-gradient(to bottom, #5591a9 5%, #9ccddc 100%);
-	background-color:#5591a9;
-	border-radius:5px;
-	border:1px solid #124d77;
-	display:inline-block;
-	cursor:pointer;
-	color:#ffffff;
-	font-family:Arial;
-	font-size:16px;
-	padding:6px 24px;
-	text-decoration:none;
-	text-shadow:0px 1px 0px #154682;
-}
-.rules_button:hover {
-	background:linear-gradient(to bottom, #9ccddc 5%, #5591a9 100%);
-	background-color:#9ccddc;
-}
-.rules_button:active {
-	position:relative;
-	top:1px;
-}
+
 .main {
     display: flex;
     justify-content: space-between;
@@ -102,6 +88,7 @@ body {
     background: rgb(6,44,67);
     background: linear-gradient(0deg, rgba(6,44,67,0.9) 0%, rgba(6,44,67,0.9) 31%, rgba(85,145,169,0.9) 100%);
     display: flex;
+    flex-flow: wrap;
     justify-content: space-around;
     align-items: center;
     align-content: space-between;
@@ -110,7 +97,7 @@ body {
     padding: 1em;
     padding-left: 5em;
     padding-right: 5em;
-    margin: 2em;
+    margin: 3em;
     font-family: "Syne Mono", monospace;
     font-size: 100%;
     color: #ced7e0;
@@ -122,16 +109,18 @@ body {
 
 }
 
-#potriat {
+/******* Potriat ********/
+
+#portrait {
     text-align: center;
     width: 250px;
     margin-top: -100px;
-    margin-left: -125px;
+    margin-left: -150px;
     margin-right: 10px;
 
 }
 
-#potriat_img {
+#portrait_img {
     border-radius: 50%;
     border: 10px outset silver;
     height: 350px;
@@ -139,12 +128,161 @@ body {
 
 }
 
-#potriat_name {
+#portrait_name {
     color: #ced7e0; 
 }
+
+/******* Cards ********/
 
 #flex-cards {
     justify-content: space-between;
     margin: 10px;
-    opacity: revert-layer;
+
+}
+
+.equipment_cards {
+    width: 240px;
+    height: 300px;
+    border: #124d77 solid 5px;
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    width: 100%;
+    opacity: 0;
+    transition: .5s ease;
+    background-color: #008CBA;
+  }
+
+  .container {
+    position: relative;
+    width: 50%;
+  }
+
+ .container:hover .overlay {
+    opacity: 1;
+  }
+
+  .text {
+    color: white;
+    font-size: 20px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+  }
+
+#deck-container {
+    display: flex;
+    justify-content: flex-end;
+    width: 80%;
+    align-items: flex-end;
+}
+
+#deck {
+    margin: 40px;
+    width: 300px;
+    height: 400px;
+    border: gold 2px solid;
+}
+
+.grey {
+    filter: grayscale(100%);
+}
+
+break{
+    flex-basis: 100%;
+    width: 0px; 
+    height: 0px; 
+    overflow: hidden;
+  }
+
+/******** Buttons **********/
+
+.rules_button {
+	box-shadow:inset 0px 1px 0px 0px #54a3f7;
+	background:linear-gradient(to bottom, #5591a9 5%, #9ccddc 100%);
+	background-color:#5591a9;
+	border-radius:5px;
+	border:1px solid #124d77;
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	font-family:Arial;
+	font-size:16px;
+	padding:6px 24px;
+	text-decoration:none;
+	text-shadow:0px 1px 0px #154682;
+}
+.rules_button:hover {
+	background:linear-gradient(to bottom, #9ccddc 5%, #5591a9 100%);
+	background-color:#9ccddc;
+}
+.rules_button:active {
+	position:relative;
+	top:1px;
+}
+
+.myButton {
+	box-shadow:inset 0px 1px 0px 0px #cf866c;
+	background:linear-gradient(to bottom, #d0451b 5%, #bc3315 100%);
+	background-color:#d0451b;
+	border-radius:3px;
+	border:1px solid #942911;
+	cursor:pointer;
+	color:#ffffff;
+	font-family:Arial;
+	font-size:16px;
+	padding:22px 70px;
+    text-align: center;
+    height: 40px;
+    line-height: 1px;
+	text-decoration:none;
+	text-shadow:0px 1px 0px #854629;
+}
+.myButton:hover {
+	background:linear-gradient(to bottom, #bc3315 5%, #d0451b 100%);
+	background-color:#bc3315;
+}
+.myButton:active {
+	position:relative;
+	top:1px;
+}
+
+.myButton2 {
+    background: rgb(6,44,67);
+    background: linear-gradient(0deg, rgba(6,44,67,0.9) 0%, rgba(6,44,67,0.9) 31%, rgba(85,145,169,0.9) 100%);
+	border-radius:3px;
+    background-color:#5591a9;
+    border:1px solid #124d77;
+	cursor:pointer;
+	color:#ffffff;
+	font-family:Arial;
+	font-size:16px;
+	padding:22px 70px;
+    text-align: center;
+    height: 40px;
+    line-height: 1px;
+	text-decoration:none;
+	text-shadow:0px 1px 0px #154682;
+}
+.myButton2:hover {
+	background:linear-gradient(to bottom, #9ccddc 5%, #5591a9 100%);
+	background-color:#9ccddc;
+}
+.myButton2:active {
+	position:relative;
+	top:1px;
+}
+
+#buttons {
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-bottom: 50px;
 }

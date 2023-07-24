@@ -8,6 +8,16 @@ app = Flask(__name__)
 
 current_rooms = [12345, 54321, 11111]
 
+EQUIPMENT = {
+    '0':"Defeat the Hive Mother",
+    '1':"Defeat Aliens with strength 3 or loss",
+    '2':"Defeat Aliens with even-numbered strength",
+    '3':"Health: +5",
+    '4':"Health: +3",
+    '5':"Defeat one Alien before exploring the Ship"
+}
+
+
 @app.route('/')
 def main():
     return render_template('main.html')
@@ -44,6 +54,19 @@ def game_room(roomcode):
 @app.route('/todo')
 def todo():
     return render_template('todo.html')
+
+@app.route('/game')
+def game():
+    return render_template('game.html')
+
+@app.route('/api/load_room')
+def api_portrait():
+    randnum = randint(1,1000)
+    res = requests.get(URL+ str(randnum))
+    results = res.json()
+    image = results['data'][2]['images']['jpg']['image_url']
+    print(image)
+    return jsonify(image=image, crew='Gunner', equipment=EQUIPMENT)
 
 if __name__ == '__main__':
 

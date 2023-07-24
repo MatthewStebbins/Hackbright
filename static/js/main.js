@@ -38,3 +38,5 @@ function createRoom(evt) {
         }
     });
 }
+
+document.querySelector('#create-button').addEventListener('click', createRoom);

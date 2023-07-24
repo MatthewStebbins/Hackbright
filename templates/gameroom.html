@@ -3,23 +3,37 @@
 {% block title %}Room {{roomcode}}{% endblock %}
 
 {% block content %}
-<div class="action_bar">
-    <center>
+<center>
+<!--     <div class="action_bar">
+        <form action="/">
+            <button id="main_button" class = "rules_button">Main</Main></button>
+          </form>
+    </div>  -->
+    <div class="action_bar">
       <form action="/rules">
-        <button class = "rules_button">Rules</button>
+        <button id="rules_button" class = "rules_button">Rules</button>
       </form>
-    </center>
-  </div>
+    </div>
+</center>
   <div class="main">
 
   <div class= "game">
-    <div id = potriat>
-        <img id= potriat_img src={{image}}>
-        <h2 id= potriat_name>{{crew}}</h2>
+    <div id = portrait>
+        <img id= portrait_img src={{image}}>
+        <h2 id= portrait_name>{{crew}}</h2>
       </div>
       {% for num in range(6) %}
       <div id="flex-cards"><img id="equipment_{{num}}" src="/static/img/200x300 placeholder.png"></div>
       {% endfor %}
+      <break></break>
+      <div id="deck-container">
+        <div id="buttons">
+            <a href="#" class="myButton2">DRAW</a>
+            <break></break>
+            <a href="#" class="myButton">PASS</a>
+        </div>
+        <img id="deck" src="/static/img/300x450 placeholder.png">
+        <img id="deck" src="/static/img/300x450 placeholder.png"> </div>
   </div>
 
   </div>

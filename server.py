@@ -1,10 +1,14 @@
 import requests
 from random import choice, randint
 from flask import Flask, render_template, request, redirect, jsonify
+from model import connect_to_db, db
+import crud
+import time
 
 URL = "https://api.jikan.moe/v4/characters?page="
 
 app = Flask(__name__)
+app.secret_key = "dev"
 
 current_rooms = [12345, 54321, 11111]
 
@@ -26,30 +30,43 @@ def main():
 def rules():
     return render_template('rules.html')
 
-@app.route("/create-room")
+@app.route("/create-room", methods={'POST', 'GET'})
 def create_room():
+    
+    randnum = randint(1,1000)
+    res = requests.get(URL+ str(randnum))
+    results = res.json()
+    image = results['data'][2]['images']['jpg']['image_url']
 
-    return jsonify({"status":"success"})
+    room = crud.create_room(image)
+    db.session.add(room)
+    db.session.commit()
+
+    # print(f'redirecting... to /room/{room.id}')
+    payload = jsonify({'status':'success', 'roomcode':room.id})
+    # print(payload.response)
+    return payload
 
 @app.route("/join-room")
 def join_room():
     roomcode = request.args['room']
-    print(roomcode)
-    if int(roomcode) in current_rooms:
+    # print(roomcode)
+
+    if crud.get_room_by_id(roomcode):
         return jsonify({"status":"active", "roomcode":roomcode})
     else:
         return jsonify({"status":"inactive", "roomcode":roomcode})
     
 @app.route("/room/<roomcode>")
 def game_room(roomcode):
-    if not(int(roomcode) in current_rooms):
-        return redirect('/')
+    # print(f'in /room/{roomcode}')
+    room = crud.get_room_by_id(roomcode)
+
+    if room:
+        return render_template('gameroom.html', roomcode=roomcode, image=room.games.image, crew='Gunner')   
     else:
-        randnum = randint(1,1000)
-        res = requests.get(URL+ str(randnum))
-        results = res.json()
-        image = results['data'][2]['images']['jpg']['image_url']
-        return render_template('gameroom.html', roomcode=roomcode, image=image, crew='Gunner')
+        print('redirecting to /')
+        return redirect('/')
 
 @app.route('/todo')
 def todo():
@@ -68,6 +85,9 @@ def api_portrait():
     print(image)
     return jsonify(image=image, crew='Gunner', equipment=EQUIPMENT)
 
-if __name__ == '__main__':
 
+
+
+if __name__ == '__main__':
+    connect_to_db(app)
     app.run(debug=True, host="0.0.0.0")

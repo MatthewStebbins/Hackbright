@@ -1,7 +1,7 @@
 import requests
 from random import choice, randint
-from flask import Flask, render_template, request, redirect, jsonify
-from model import connect_to_db, db
+from flask import Flask, render_template, request, redirect, jsonify, session
+from model import connect_to_db, db, role
 import crud
 import time
 
@@ -30,13 +30,10 @@ def main():
 def rules():
     return render_template('rules.html')
 
-@app.route("/create-room", methods={'POST', 'GET'})
+@app.route("/create-room", methods={'POST'})
 def create_room():
     
-    randnum = randint(1,1000)
-    res = requests.get(URL+ str(randnum))
-    results = res.json()
-    image = results['data'][2]['images']['jpg']['image_url']
+    image = get_adventurer_image()
 
     room = crud.create_room(image)
     db.session.add(room)
@@ -57,10 +54,13 @@ def join_room():
     else:
         return jsonify({"status":"inactive", "roomcode":roomcode})
     
-@app.route("/room/<roomcode>")
+@app.route("/room/<roomcode>", methods={'POST'})
 def game_room(roomcode):
     # print(f'in /room/{roomcode}')
+    user_id = session.get('user')
+    print(user_id)
     room = crud.get_room_by_id(roomcode)
+    user = check_user(user_id, room.id)
 
     if room:
         return render_template('gameroom.html', roomcode=roomcode, image=room.games.image, crew='Gunner')   
@@ -85,8 +85,34 @@ def api_portrait():
     print(image)
     return jsonify(image=image, crew='Gunner', equipment=EQUIPMENT)
 
+############################################
+#           Helper functions               #
+############################################
 
+def check_user(user_id, room_id, role=role.Player):
+    user = crud.get_user_by_id(user_id)
 
+    if user:
+        if user.room_id != room_id:
+            user.room_id = room_id
+            db.session.add(user)
+            db.session.commit()
+        return user
+    else:
+        user = crud.create_user(room_id, role)
+        db.session.add(user)
+        db.session.commit()
+        session['user'] = user.id
+        return user
+
+def get_adventurer_image():
+
+    randnum = randint(1,1000)
+    res = requests.get(URL+ str(randnum))
+    results = res.json()
+    image = results['data'][2]['images']['jpg']['image_url']
+
+    return image    
 
 if __name__ == '__main__':
     connect_to_db(app)

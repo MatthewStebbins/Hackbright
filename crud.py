@@ -1,4 +1,4 @@
-from model import db, Room, Game, connect_to_db
+from model import db, Room, Game, User, role, connect_to_db
 
 ##################################################
 # This file is to hanndle the crud action on the #
@@ -22,6 +22,14 @@ def get_room_by_id(id):
 
 def create_game(image):
     return Game(image=image)
+
+########## User #############
+
+def create_user(room_id, role=role.Player):
+    return User(room_id=room_id, role=role)
+
+def get_user_by_id(id):
+    return User.query.get(id)
 
 
 if __name__ == '__main__':

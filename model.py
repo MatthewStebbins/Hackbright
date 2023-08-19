@@ -20,7 +20,7 @@ class Room(db.Model):
     created_at = db.Column(db.DateTime,
                            nullable=False, default=db.func.current_timestamp())
     
- #   users = db.relationship('User', uselist=False, back_populates='rooms')
+    users = db.relationship('User', back_populates='rooms')
     games = db.relationship('Game', uselist=False, back_populates='rooms')
 
     def __repr__(self):
@@ -45,7 +45,7 @@ class Game(db.Model):
 #                              nullable=False)
     
     rooms = db.relationship('Room', uselist=False, back_populates='games')
-#     users = db.relationship('User', uselist=False, back_populates='games')
+#    users = db.relationship('User', back_populates='games')
 #     adventurers = db.relationship('Adventurer', uselist=False, back_populates='games')
 #     decks = db.relationship('Deck', back_populates='games')    
 
@@ -154,25 +154,25 @@ class Game(db.Model):
 #     def __repr__(self):
 #         return f'<Equipment_defeats_enemy enemy id={self.enemy_id}, equipment id={self.equipment_id}>'
 
-# class role(enum.Enum):
-#     Host = 'Host'
-#     Player = 'Player'
+class role(enum.Enum):
+    Host = 'Host'
+    Player = 'Player'
 
 
-# class User(db.Model):
+class User(db.Model):
 
-#     __tablename__ = 'users'
+    __tablename__ = 'users'
 
-#     id = db.Column(db.Integer,
-#                 autoincrement=True,
-#                 primary_key=True)
-#     room = db.Column(db.Integer,
-#                      db.ForeignKey('rooms.id'),
-#                      nullable=False)
-#     role = db.Column(db.Enum(role), nullable=False)
+    id = db.Column(db.Integer,
+                autoincrement=True,
+                primary_key=True)
+    room_id = db.Column(db.Integer,
+                     db.ForeignKey('rooms.id'),
+                     nullable=False)
+    role = db.Column(db.Enum(role), nullable=False)
 
-#     games = db.relationship('Game', uselist=False, back_populates='users')
-#     rooms = db.relationship('Room', backpopulates='users')
+#    games = db.relationship('Game', back_populates='users')
+    rooms = db.relationship('Room', back_populates='users')
 #     users_stats = db.relationship('User_stats', uselist=False, backpopulates='users')
 
 # class User_stats(db.Model):

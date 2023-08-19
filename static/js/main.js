@@ -19,7 +19,8 @@ function activeRoom(evt) {
             alert(`Room code ${joinRoomJSON.roomcode} is not avalible`);
         }
         else {
-            window.location.replace(`/room/${joinRoomJSON.roomcode}`);
+            console.log("Redirecting");
+            redirectPost(`/room/${joinRoomJSON.roomcode}`);
         }
     });
 }
@@ -40,8 +41,8 @@ function createRoom(evt) {
             alert("failed to create room. Please try again later.");
         }
         else {
-            // console.log("routing to /room/")
-            window.location.replace(`/room/${createRoomJSON.roomcode}`);
+            console.log("Redirecting");
+            redirectPost(`/room/${createRoomJSON.roomcode}`);
         }
     })
     .catch((error) => {
@@ -52,3 +53,23 @@ function createRoom(evt) {
 }
 
 document.querySelector('#create-button').addEventListener("click", createRoom);
+
+
+/*****************************
+        Hepler Functions
+******************************/
+
+function redirectPost(url) {
+    var form = document.createElement('form');
+    document.body.appendChild(form);
+    form.method = 'post';
+    form.action = url;
+    // for (var name in data) {
+    //     var input = document.createElement('input');
+    //     input.type = 'hidden';
+    //     input.name = name;
+    //     input.value = data[name];
+    //     form.appendChild(input);
+    // }
+    form.submit();
+}

@@ -22,10 +22,13 @@ function Game() {
 
     function Equipment() {
         const equipmentList = [];
+        var index = 0;
+        console.log(equipment)
 
         if(roomLoaded) {
-            for(const index of Array(6).keys()) {
-                const text = equipment[`${index}`];
+            for(const item of equipment) {
+                console.log(item)
+                const text = item[`discription`];
                 equipmentList.push(
                     <div key={`div_${index}`} id="flex-cards">
                         <div className="container">
@@ -36,6 +39,7 @@ function Game() {
                         </div>
                     </div>
                 );
+                index++; 
             }
         }
         else {

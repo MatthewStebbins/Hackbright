@@ -1,0 +1,42 @@
+[
+    {
+        "deck": 1,
+        "enemy_id": 1,
+        "per_deck": 2
+    },
+    {
+        "deck": 1,
+        "enemy_id": 2,
+        "per_deck": 2
+    },
+    {
+        "deck": 1,
+        "enemy_id": 3,
+        "per_deck": 2
+    },
+    {
+        "deck": 1,
+        "enemy_id": 4,
+        "per_deck": 2
+    },
+    {
+        "deck": 1,
+        "enemy_id": 5,
+        "per_deck": 2
+    },
+    {
+        "deck": 1,
+        "enemy_id": 6,
+        "per_deck": 1
+    },
+    {
+        "deck": 1,
+        "enemy_id": 7,
+        "per_deck": 1
+    },
+    {
+        "deck": 1,
+        "enemy_id": 8,
+        "per_deck": 1
+    }
+]

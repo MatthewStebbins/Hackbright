@@ -1,0 +1,34 @@
+[
+    {
+        "name": "Space Crab",
+        "strength": 1
+    },
+    {
+        "name": "Grey",
+        "strength": 2
+    },
+    {
+        "name": "Bandit",
+        "strength": 3
+    },
+    {
+        "name": "Aelzead",
+        "strength": 4
+    },
+    {
+        "name": "Hogral",
+        "strength": 5
+    },
+    {
+        "name": "Mech",
+        "strength": 6
+    },
+    {
+        "name": "Hulk",
+        "strength": 7
+    },
+    {
+        "name": "Hive Mother",
+        "strength": 9
+    }
+]

@@ -54,16 +54,18 @@ def join_room():
     else:
         return jsonify({"status":"inactive", "roomcode":roomcode})
     
-@app.route("/room/<roomcode>", methods={'POST'})
+@app.route("/room/<roomcode>", methods={'POST', 'GET'})
 def game_room(roomcode):
     # print(f'in /room/{roomcode}')
     user_id = session.get('user')
-    print(user_id)
+    # print(user_id)
     room = crud.get_room_by_id(roomcode)
     user = check_user(user_id, room.id)
+    session['room'] = room.id
 
     if room:
-        return render_template('gameroom.html', roomcode=roomcode, image=room.games.image, crew='Gunner')   
+        return render_template('game.html')
+        # return render_template('gameroom.html', roomcode=roomcode, image=room.games.image, crew=room.games.adventurers.name)   
     else:
         print('redirecting to /')
         return redirect('/')
@@ -72,18 +74,29 @@ def game_room(roomcode):
 def todo():
     return render_template('todo.html')
 
+@app.route('/test')
+def test():
+    card = crud.get_random_card(1)
+    return card.__repr__()
+
 @app.route('/game')
 def game():
     return render_template('game.html')
 
 @app.route('/api/load_room')
-def api_portrait():
-    randnum = randint(1,1000)
-    res = requests.get(URL+ str(randnum))
-    results = res.json()
-    image = results['data'][2]['images']['jpg']['image_url']
-    print(image)
-    return jsonify(image=image, crew='Gunner', equipment=EQUIPMENT)
+def load_room():
+    room_id = session.get('room')
+    room = crud.get_room_by_id(room_id)
+    print(room)
+
+    advent_id = room.games.adventurers.id
+    # print(advent_id)
+
+    equipment = crud.get_equipment_by_adventurer_id_all(advent_id)
+
+    return jsonify(image=room.games.image,
+                   crew=room.games.adventurers.name,
+                   equipment= equipment)
 
 ############################################
 #           Helper functions               #
@@ -107,10 +120,15 @@ def check_user(user_id, room_id, role=role.Player):
 
 def get_adventurer_image():
 
-    randnum = randint(1,1000)
-    res = requests.get(URL+ str(randnum))
-    results = res.json()
-    image = results['data'][2]['images']['jpg']['image_url']
+    bad_url = 'https://cdn.myanimelist.net/img/sp/icon/apple-touch-icon-256.png'
+    image = bad_url
+
+    while image == bad_url:
+        print('bad url if twice in a row')
+        randnum = randint(1,1000)
+        res = requests.get(URL+ str(randnum))
+        results = res.json()
+        image = results['data'][2]['images']['jpg']['image_url']
 
     return image    
 

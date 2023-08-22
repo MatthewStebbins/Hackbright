@@ -9,13 +9,55 @@ import crud
 import model
 import server
 
+# EQUIPMENT = {
+#     '0':"Defeat the Hive Mother",
+#     '1':"Defeat Aliens with strength 3 or loss",
+#     '2':"Defeat Aliens with even-numbered strength",
+#     '3':"Health: +5",
+#     '4':"Health: +3",
+#     '5':"Defeat one Alien before exploring the Ship"
+# }
+
 os.system("dropdb theSiren")
 os.system('createdb theSiren')
 
-model.connect_to_db(server.app)
+# model.connect_to_db(server.app)
 with server.app.app_context():
     model.db.create_all()
 
-# with server.app.app_context():
-#     model.db.session.add(room)
-#     model.db.session.commit()
+######## Seed adventurers ########
+adventurer = crud.create_adventurer('Gunner', 3)
+
+with server.app.app_context():
+    model.db.session.add(adventurer)
+    model.db.session.commit()
+
+######## Seed equipments #########
+with open('data/equipment.json') as f:
+    equipment_data = json.loads(f.read())
+
+equipment_list = []
+for item in equipment_data:
+    
+    temp = crud.create_equipment(item['name'],
+                                 item['adventurer_id'],
+                                 item['discription'])
+    equipment_list.append(temp)
+
+with server.app.app_context():
+    model.db.session.add_all(equipment_list)
+    model.db.session.commit()
+
+########## Seed enemies ###########
+
+with open('data/enemy.json') as f:
+    enemy_data = json.loads(f.read())
+
+enemy_list = []
+for item in enemy_data:
+    temp = crud.create_enemy(item['name'], item['strength'])
+    enemy_list.append(temp)
+
+with server.app.app_context():
+    model.db.session.add_all(enemy_list)
+    model.db.session.commit()

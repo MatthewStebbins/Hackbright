@@ -36,6 +36,7 @@ class Game(db.Model):
     image = db.Column(db.String, nullable=False)
     adventurer_id = db.Column(db.Integer, db.ForeignKey('adventurers.id'),
                      nullable=False)
+    active_user = db.Column(db.Integer, db.ForeignKey('users.id'))
 #     draw_deck_num = db.Column(db.Integer,
 #                              db.ForeignKey('decks.deck'),
 #                              nullable=False)
@@ -44,7 +45,7 @@ class Game(db.Model):
 #                              nullable=False)
     
     rooms = db.relationship('Room', back_populates='games')
-#    users = db.relationship('User', back_populates='games')
+    users = db.relationship('User', back_populates='games')
     adventurers = db.relationship('Adventurer', uselist=False, back_populates='games')
     decks = db.relationship('Deck', back_populates='games')    
 
@@ -112,7 +113,7 @@ class Deck(db.Model):
     in_deck = db.Column(db.Integer, nullable=False)
 
 #     adventurers = db.relationship('Adventurer', back_populates='decks')
-    enemies = db.relationship('Enemy', uselist=False, back_populates='decks')
+    enemies = db.relationship('Enemy', lazy='subquery', uselist=False, back_populates='decks')
     games = db.relationship('Game', back_populates='decks')
 
     def __repr__(self):
@@ -170,10 +171,14 @@ class User(db.Model):
                      db.ForeignKey('rooms.id'),
                      nullable=False)
     role = db.Column(db.Enum(role), nullable=False)
+    user_passed = db.Column(db.Boolean, default=False)
 
-#    games = db.relationship('Game', back_populates='users')
+    games = db.relationship('Game', back_populates='users')
     rooms = db.relationship('Room', back_populates='users')
 #     users_stats = db.relationship('User_stats', uselist=False, backpopulates='users')
+
+    def __repr__(self):
+        return f'<User id={self.id}, room_id={self.room_id}, user_passed={self.user_passed}>'
 
 # class User_stats(db.Model):
 

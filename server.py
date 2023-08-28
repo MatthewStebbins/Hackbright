@@ -32,12 +32,17 @@ def rules():
 
 @app.route("/create-room", methods={'POST'})
 def create_room():
-    
+    user_id = session.get('user')
     image = get_adventurer_image()
 
     room = crud.create_room(image)
     db.session.add(room)
     db.session.commit()
+    user = check_user(user_id, room.id, role.Host)
+    room.games.active_user = user_id
+    db.session.add(room)
+    db.session.commit()    
+    session['room'] = room.id
 
     # print(f'redirecting... to /room/{room.id}')
     payload = jsonify({'status':'success', 'roomcode':room.id})
@@ -77,17 +82,22 @@ def todo():
 @app.route('/test')
 def test():
     card = crud.get_random_card(1)
-    return card.__repr__()
+    crud.update_deck(card.game_id, card.enemy_id)
+    return render_template('todo.html')
 
 @app.route('/game')
 def game():
     return render_template('game.html')
 
+############################################
+#              API functions               #
+############################################  
+
 @app.route('/api/load_room')
 def load_room():
     room_id = session.get('room')
     room = crud.get_room_by_id(room_id)
-    print(room)
+    # print(room)
 
     advent_id = room.games.adventurers.id
     # print(advent_id)
@@ -96,7 +106,36 @@ def load_room():
 
     return jsonify(image=room.games.image,
                    crew=room.games.adventurers.name,
-                   equipment= equipment)
+                   equipment=equipment,
+                   activeUser=room.games.active_user,
+                   currentUser=session.get('user'))
+
+@app.route('/api/draw_card')
+def draw_card():
+    room_id = session.get('room')
+    room = crud.get_room_by_id(room_id)
+
+    game_id = room.game_id
+    card = crud.get_random_card(game_id)
+    crud.update_deck(card.game_id, card.enemy_id)
+    print(card.enemies)
+    return jsonify(image='/static/img/Enemies/test.png',
+                    name=card.enemies.name,
+                    strength=card.enemies.strength)
+
+@app.route('/api/pass')
+def passTurn():
+    user_id = session.get('user')
+    room_id = session.get('room')
+    print(user_id)
+
+    success = crud.set_user_passed(user_id)
+    active_user = crud.get_next_active_user(user_id, room_id)
+
+    return jsonify(success=success, activeUser=active_user)
+
+
+
 
 ############################################
 #           Helper functions               #

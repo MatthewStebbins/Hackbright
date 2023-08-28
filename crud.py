@@ -4,6 +4,7 @@ import json
 import server
 import model
 from sqlalchemy.sql import func
+import random
 
 ##################################################
 # This file is to hanndle the crud action on the #
@@ -31,6 +32,12 @@ def create_game(image, advent_id=1):
     build_draw_deck(game.id)
     return game
 
+def set_active_user(user_id, room_id):
+    room = Room.query.filter(Room.id == room_id).first()
+    room.games.active_user = user_id
+    db.session.add(room)
+    db.session.commit()    
+
 ########## User #############
 
 def create_user(room_id, role=role.Player):
@@ -38,6 +45,33 @@ def create_user(room_id, role=role.Player):
 
 def get_user_by_id(id):
     return User.query.get(id)
+
+def set_user_passed(id):
+    user = User.query.filter(User.id == id).first()
+    user.user_passed = True
+    db.session.add(user)
+    db.session.commit()
+
+    return True
+
+def get_next_active_user(user_id, room_id):
+    users_in_room = db.session.query(User.id).filter(User.room_id == room_id).order_by(User.id).all()
+
+    # for user in users_in_room:
+    #     print(user)
+
+    # print(users_in_room)
+
+    current_index = users_in_room.index((user_id,))
+
+    if current_index + 1 == len(users_in_room):
+        new_active_user = users_in_room[0][0]
+    else:
+        new_active_user = users_in_room[current_index + 1][0]
+
+    set_active_user(new_active_user, room_id)
+
+    return new_active_user
 
 ######## Adventurer #########
 
@@ -86,13 +120,29 @@ def build_draw_deck(game_id):
         db.session.commit()
 
 def get_random_card(game_id): # in-progress
-    num_cards = Deck.query(func.count(Deck.in_deck)).filter(Deck.game_id == game_id).all()
-    print(num_cards)
-    pick = random.choice(1, num_cards)
-    print(pick)
-    card = Deck.query.filter(Deck.game_id == game_id).order_by(func.random()).first()
+    cards = Deck.query.filter(Deck.game_id == game_id).all()
+    print(cards)
+
+    if len(cards) >= 1:
+        weights = []
+        for card in cards:
+            weights.append(card.in_deck)
+        print(weights)
+        card = random.choices(cards, weights=weights)
+        card = card[0]
+    else:
+        card = -1
     print(card)
     return card
+
+def update_deck(game_id, enemy_id):
+    card = Deck.query.filter(Deck.game_id == game_id, Deck.enemy_id == enemy_id).first()
+    
+    if card.in_deck >= 1:
+        db.session.delete(card)
+    else:
+        card.in_deck -= 1
+    db.session.commit()
 
 if __name__ == '__main__':
     from server import app

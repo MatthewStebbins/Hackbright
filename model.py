@@ -97,6 +97,10 @@ class Equipment(db.Model):
     def __repr__(self):
         return f'<Equipment id={self.id}, name={self.name}>'
 
+class deck_type(enum.Enum):
+    Ship = 'Ship'
+    Draw = 'Draw'
+
 class Deck(db.Model):
 
     __tablename__ = 'decks'
@@ -111,6 +115,7 @@ class Deck(db.Model):
                          db.ForeignKey('enemies.id'),
                          nullable=False)
     in_deck = db.Column(db.Integer, nullable=False)
+    deck_type = db.Column(db.Enum(deck_type), nullable=False)
 
 #     adventurers = db.relationship('Adventurer', back_populates='decks')
     enemies = db.relationship('Enemy', lazy='subquery', uselist=False, back_populates='decks')

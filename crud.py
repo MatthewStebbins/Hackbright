@@ -1,4 +1,4 @@
-from model import db, Room, Game, User, role, Adventurer, Equipment, Enemy, Deck, connect_to_db
+from model import db, Room, Game, User, role, deck_type, Adventurer, Equipment, Enemy, Deck, connect_to_db
 import crud
 import json
 import server
@@ -57,11 +57,6 @@ def set_user_passed(id):
 def get_next_active_user(user_id, room_id):
     users_in_room = db.session.query(User.id).filter(User.room_id == room_id).order_by(User.id).all()
 
-    # for user in users_in_room:
-    #     print(user)
-
-    # print(users_in_room)
-
     current_index = users_in_room.index((user_id,))
 
     if current_index + 1 == len(users_in_room):
@@ -100,11 +95,14 @@ def get_equipment_by_adventurer_id_all(advent_id):
 def create_enemy(name, strength):
     return Enemy(name=name, strength=strength)
 
+def get_enemy_id_by_name(name):
+    enemy = db.session.query(Enemy.id).filter(Enemy.name == name).first()
+    return enemy[0]
 
 ########### Deck ############
 
-def create_deck(game_id, enemy_id, per_deck):
-    return Deck(game_id=game_id, enemy_id=enemy_id, in_deck=per_deck)
+def create_deck(game_id, enemy_id, per_deck, deck_type):
+    return Deck(game_id=game_id, enemy_id=enemy_id, in_deck=per_deck, deck_type=deck_type)
 
 def build_draw_deck(game_id):
     with open('data/deck.json') as f:
@@ -112,15 +110,15 @@ def build_draw_deck(game_id):
 
     deck_list = []
     for item in deck_data:
-        temp = crud.create_deck(game_id, item['enemy_id'], item['per_deck'])
+        temp = crud.create_deck(game_id, item['enemy_id'], item['per_deck'], deck_type=deck_type.Draw)
         deck_list.append(temp)
 
     with server.app.app_context():
         db.session.add_all(deck_list)
         db.session.commit()
 
-def get_random_card(game_id): # in-progress
-    cards = Deck.query.filter(Deck.game_id == game_id).all()
+def get_random_card(game_id):
+    cards = Deck.query.filter(Deck.game_id == game_id, Deck.deck_type == deck_type.Draw ).all()
     print(cards)
 
     if len(cards) >= 1:
@@ -135,14 +133,31 @@ def get_random_card(game_id): # in-progress
     print(card)
     return card
 
-def update_deck(game_id, enemy_id):
-    card = Deck.query.filter(Deck.game_id == game_id, Deck.enemy_id == enemy_id).first()
+def remove_card(game_id, enemy_id, deck_type):
+    card = Deck.query.filter(Deck.game_id == game_id,
+                            Deck.enemy_id == enemy_id,
+                             Deck.deck_type == deck_type).first()
     
-    if card.in_deck >= 1:
+    if card.in_deck <= 1:
         db.session.delete(card)
     else:
         card.in_deck -= 1
     db.session.commit()
+
+def add_card(game_id, enemy_id, deck_type):
+    card = Deck.query.filter(Deck.game_id == game_id,
+                            Deck.enemy_id == enemy_id,
+                             Deck.deck_type == deck_type).first()
+    
+    if card == None:
+        card = crud.create_deck(game_id, enemy_id, 1, deck_type=deck_type.Ship)        
+        db.session.add(card)
+    else:
+        card.in_deck += 1
+    db.session.commit()    
+
+    return True
+
 
 if __name__ == '__main__':
     from server import app

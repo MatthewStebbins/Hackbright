@@ -1,7 +1,7 @@
 import requests
 from random import choice, randint
 from flask import Flask, render_template, request, redirect, jsonify, session
-from model import connect_to_db, db, role
+from model import connect_to_db, db, role, deck_type
 import crud
 import time
 
@@ -117,7 +117,7 @@ def draw_card():
 
     game_id = room.game_id
     card = crud.get_random_card(game_id)
-    crud.update_deck(card.game_id, card.enemy_id)
+    crud.remove_card(card.game_id, card.enemy_id, deck_type.Draw)
     print(card.enemies)
     return jsonify(image='/static/img/Enemies/test.png',
                     name=card.enemies.name,
@@ -129,7 +129,24 @@ def passTurn():
     room_id = session.get('room')
     print(user_id)
 
+
     success = crud.set_user_passed(user_id)
+    active_user = crud.get_next_active_user(user_id, room_id)
+
+    return jsonify(success=success, activeUser=active_user)
+
+@app.route('/api/add/<name>', methods={'POST', 'GET'})
+def addCard(name):
+    user_id = session.get('user')
+    room_id = session.get('room')
+    room = crud.get_room_by_id(room_id)
+    enemy_id = crud.get_enemy_id_by_name(name)
+
+    game_id = room.game_id
+    print(game_id)
+    print(enemy_id)
+
+    success = crud.add_card(game_id, enemy_id, deck_type.Ship)
     active_user = crud.get_next_active_user(user_id, room_id)
 
     return jsonify(success=success, activeUser=active_user)

@@ -99,6 +99,50 @@ function Game() {
         );
     }
 
+    function Buttons(props) {
+        const {drawCardImage} = props;
+
+        if(drawCardImage === "/static/img/deck_back_1.jpg") { // drawCardImage gets updated in DrawDeck() 
+            return (
+                <div id="buttons">
+                    <a href="#" className="myButton2" onClick={drawCard}>DRAW</a>
+
+                    <a href="#" className="myButton" onClick={passTurn}>PASS</a>
+                </div>
+            );
+        }
+        else {
+            return (
+                <div id="buttons">
+                    <a href="#" className="myButton2" onClick={addCard}>ADD</a>
+
+                    <a href="#" className="myButton" onClick={discardCard}>Discard</a>
+                </div>
+            );  
+        }
+    }
+
+    function addCard() {
+
+        fetch(`/api/add/${drawCardName}`, {
+            Method: 'POST'
+          })
+          .then((response) => response.json())
+          .then((responseData) => {
+            console.log(responseData.success);
+            if(responseData.success === true) {
+                setUserActive(responseData.activeUser);
+                setDrawCardImage("/static/img/deck_back_1.jpg");
+                setDrawCardName("");
+                setDrawCardStrength("");                
+            }          
+        });
+    }
+
+    function discardCard() {
+
+    }
+
     function DrawDeck(props) {
         const {image, strength, name} = props;
         var text = "";
@@ -118,7 +162,7 @@ function Game() {
     }
 
     function drawCard() {
-        console.log('in drawCard()')
+        // console.log('in drawCard()')
             fetch('/api/draw_card')
             .then((response) => response.json())
             .then((cardData) => {
@@ -204,13 +248,9 @@ function Game() {
                     <Portrait portrait={portrait} crew={crew} />
                      <Equipment equipment={equipment} roomLoaded={roomLoaded} />
                      <div id="deck-container">
-                         <div id="buttons">
-                             <a href="#" className="myButton2" onClick={drawCard}>DRAW</a>
-
-                             <a href="#" className="myButton" onClick={passTurn}>PASS</a>
-                         </div>
-                         <img id="shipDeck" className="deck" src="/static/img/deck_back_2.jpg"/>
-                         <DrawDeck image ={drawCardImage} strength={drawCardStrength} name={drawCardName}/> 
+                        <Buttons drawCardImage={drawCardImage} />
+                        <img id="shipDeck" className="deck" src="/static/img/deck_back_2.jpg"/>
+                        <DrawDeck image ={drawCardImage} strength={drawCardStrength} name={drawCardName}/> 
                      </div>
                  </div>
                  <Modal userActive={userActive} userCurrent={userCurrent} gameStarted={gameStarted} />

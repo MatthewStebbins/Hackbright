@@ -18,7 +18,7 @@ import server
 #     '5':"Defeat one Alien before exploring the Ship"
 # }
 
-os.system("dropdb theSiren")
+os.system("dropdb theSiren -f")
 os.system('createdb theSiren')
 
 # model.connect_to_db(server.app)
@@ -41,7 +41,8 @@ for item in equipment_data:
     
     temp = crud.create_equipment(item['name'],
                                  item['adventurer_id'],
-                                 item['discription'])
+                                 item['discription'], 
+                                 item['hp'])
     equipment_list.append(temp)
 
 with server.app.app_context():
@@ -60,4 +61,18 @@ for item in enemy_data:
 
 with server.app.app_context():
     model.db.session.add_all(enemy_list)
+    model.db.session.commit()
+
+######## Seed equipment/enemy iteractions #######
+
+with open('data/equipment-enemy.json') as f:
+    equip_enemy_data = json.loads(f.read())
+
+equip_enemy_list = []
+for item in equip_enemy_data:
+    temp = crud.create_equipment_enemy(item['equipment'], item['enemy'])
+    equip_enemy_list.append(temp)
+
+with server.app.app_context():
+    model.db.session.add_all(equip_enemy_list)
     model.db.session.commit()

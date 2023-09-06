@@ -116,7 +116,7 @@ def draw_card():
     room = crud.get_room_by_id(room_id)
 
     game_id = room.game_id
-    card = crud.get_random_card(game_id)
+    card = crud.get_random_card(game_id, deck_type.Draw)
     crud.remove_card(card.game_id, card.enemy_id, deck_type.Draw)
     print(card.enemies)
     return jsonify(image='/static/img/Enemies/test.png',
@@ -131,9 +131,9 @@ def passTurn():
 
 
     success = crud.set_user_passed(user_id)
-    active_user = crud.get_next_active_user(user_id, room_id)
+    (active_user, ship_phase) = crud.get_next_active_user(user_id, room_id)
 
-    return jsonify(success=success, activeUser=active_user)
+    return jsonify(success=success, activeUser=active_user, shipPhase=ship_phase)
 
 @app.route('/api/add/<name>', methods={'POST', 'GET'})
 def addCard(name):
@@ -147,10 +147,40 @@ def addCard(name):
     print(enemy_id)
 
     success = crud.add_card(game_id, enemy_id, deck_type.Ship)
-    active_user = crud.get_next_active_user(user_id, room_id)
+    (active_user, ship_phase) = crud.get_next_active_user(user_id, room_id)
 
     return jsonify(success=success, activeUser=active_user)
 
+@app.route('/api/discard_equipment/<equipment_name>')
+def discardEquipment(equipment_name):
+    equipment_id = crud.get_equipment_by_name(equipment_name)
+    user_id = session.get('user')
+    room_id = session.get('room')
+    room = crud.get_room_by_id(room_id)
+
+    game_id = room.game_id
+
+    success = crud.discard_equipment(game_id, equipment_id)
+    active_user = crud.get_next_active_user(user_id, room_id)
+
+    return jsonify(success=success, equipment_id=equipment_id, activeUser=active_user)
+
+@app.route('/api/startShip')
+def startship():
+    room_id = session.get('room')
+    room = crud.get_room_by_id(room_id)
+    game_id = room.game_id
+
+    card = crud.get_random_card(game_id, deck_type.Ship)
+    crud.remove_card(card.game_id, card.enemy_id, deck_type.Ship)
+
+    # effective_active_equipment = crud.
+
+    hp = crud.get_total_hp(room)
+    return jsonify(image='/static/img/Enemies/test.png',
+                    name=card.enemies.name,
+                    strength=card.enemies.strength,
+                    hp=hp)
 
 
 
@@ -164,6 +194,7 @@ def check_user(user_id, room_id, role=role.Player):
     if user:
         if user.room_id != room_id:
             user.room_id = room_id
+            user.user_passed = False
             db.session.add(user)
             db.session.commit()
         return user

@@ -2,31 +2,37 @@
     {
         "name": "Laser Rifle",
         "discription": "Defeat the Hive Mother",
-        "adventurer_id": 1
+        "adventurer_id": 1,
+        "hp": 0
     },
     {
         "name": "Helmet",
         "discription": "Defeat Aliens with strength 3 or loss",
-        "adventurer_id": 1
+        "adventurer_id": 1,
+        "hp": 0
     },
     {
         "name": "Pistol",
         "discription": "Defeat Aliens with even-numbered strength",
-        "adventurer_id": 1
+        "adventurer_id": 1,
+        "hp": 0
     },
     {
         "name": "Space Suit",
         "discription": "Health: +5",
-        "adventurer_id": 1
+        "adventurer_id": 1,
+        "hp": 5        
     },
     {
         "name": "Medkit",
         "discription": "Health: +3",
-        "adventurer_id": 1
+        "adventurer_id": 1,
+        "hp": 3
     },
     {
         "name": "Termial detonator",
         "discription": "Defeat one Alien before exploring the Ship",
-        "adventurer_id": 1
+        "adventurer_id": 1,
+        "hp": 0
     }
 ]

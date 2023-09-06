@@ -185,7 +185,9 @@ body {
     align-items: flex-end;
     position: relative;
     text-align: center;
-    color: white;
+    color: gold;
+    font-size: 3em;
+    
 }
 
 .deck {
@@ -197,16 +199,25 @@ body {
 
 .top-right {
     position: absolute;
-    top: 60px;
+    top: 40px;
     right: 60px;
 }
 
-.top-left {
+.bottom {
     position: absolute;
     top: 80%;
-    right: 140px;
+    right: 10px;
     transform: translate(-50%, -50%);
 }
+
+.centered {
+    position: absolute;
+    top: 50%;
+    right: 490px;
+    transform: translate(-50%, -50%);
+    font-size: 3em;
+}
+
 
 .grey {
     filter: grayscale(100%);
@@ -374,4 +385,25 @@ break{
     padding: 2px 16px;
     background-color: #5cb85c;
     color: white;
+  }
+
+  /******** Discard Modal overrides **********/
+
+  .modal-equipment {
+    background: rgb(6,44,67);
+    background: linear-gradient(0deg, rgba(6,44,67,0.9) 0%, rgba(6,44,67,0.9) 31%, rgba(85,145,169,0.9) 100%);
+    display: flex;
+    flex-flow: wrap;
+    justify-content: space-around;
+    align-items: center;
+    align-content: space-between;
+    max-width: 100%;
+    min-width: 10%;
+    padding: 1em;
+    padding-left: 5em;
+    padding-right: 5em;
+    margin: 3em;
+    font-family: "Syne Mono", monospace;
+    font-size: 100%;
+    color: #ced7e0;
   }

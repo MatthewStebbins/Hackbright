@@ -5,11 +5,14 @@ function Game() {
     const [roomLoaded, setRoomLoaded] = React.useState(false);
     const [gameStarted, setGameStarted] = React.useState(false);
     const [drawCardImage, setDrawCardImage] = React.useState("/static/img/deck_back_1.jpg");
+    const [shipCardImage, setShipCardImage] = React.useState("/static/img/deck_back_2.jpg");
     const [drawCardStrength, setDrawCardStrength] = React.useState("");
     const [drawCardName, setDrawCardName] = React.useState("");
     const [userActive, setUserActive] = React.useState(0);
     const [userCurrent, setUserCurrent] = React.useState(0);
-    const [count, setCount] = React.useState(0);
+    const [discardEquipment, setDiscardEquipment] = React.useState(false);
+    const [shipCount, setShipCount] = React.useState(0);
+    const [shipPhase, setShipPhase] = React.useState(false);
 
 // Load webpage 
     
@@ -48,11 +51,11 @@ function Game() {
     function Equipment() {
         const equipmentList = [];
         var index = 0;
-        console.log(equipment)
+        // console.log(equipment)
 
         if(roomLoaded) {
             for(const item of equipment) {
-                console.log(item)
+                // console.log(item)
                 const text = item[`discription`];
                 equipmentList.push(
                     <div key={`div_${index}`} id="flex-cards">
@@ -140,7 +143,10 @@ function Game() {
     }
 
     function discardCard() {
-
+        if(userCurrent == userActive) {
+            setDiscardEquipment(true);
+            console.log(discardEquipment);
+        }
     }
 
     function DrawDeck(props) {
@@ -149,13 +155,25 @@ function Game() {
 
         if(strength > 0) {
             text = `STR ${strength}`
-        };
+        }
 
         return (
         <div className="deck_container">
             <img id="drawDeck" className="deck" src={image}/> 
             <div className="top-right">{text}</div>
-            <div className="top-left">{name}</div>
+            <div className="bottom">{name}</div>
+        </div>
+            
+        );
+    }
+
+    function ShipDeck(props) {
+        const {image, count} = props;
+
+        return (
+        <div className="deck_container">
+            <img id="shipDeck" className="deck" src={image}/> 
+            <div className="centered">{count}</div>
         </div>
             
         );
@@ -184,6 +202,9 @@ function Game() {
                 console.log(responseData.success);
                 if(responseData.success) {
                     setUserActive(responseData.activeUser);
+                }
+                if(responseData.shipPhase) {
+                    setShipPhase(responseData.shipPhase);
                 }
             });
         }
@@ -235,11 +256,150 @@ function Game() {
         )
     }
 
+    function DiscardModal() {
+        console.log("in discardModal")
+        console.log(discardEquipment)
+
+
+        if(discardEquipment) {
+
+            const optionList = [];
+
+            for(const item of equipment) {
+                // console.log(item);
+                const text = item[`name`];
+                // console.log(text);
+                optionList.push(
+                    <option key={text} value={text}>{text}</option>
+                );
+            }
+
+            return (
+                <div id="myModal" className="modal">
+                    <div className="modal-content">
+                    <form onSubmit={discard}>
+                        <div className="modal-header">
+                            <h2>Select equipment to discard</h2>
+                        </div>
+                        <div className="modal-body">
+                            <div className="modal-equipment">
+                            <Equipment equipment={equipment} roomLoaded={roomLoaded} />
+                            </div>
+                            
+                                <label htmlFor="eqiupment-select">Choose a equipment to discard</label>
+                                <select name="equipment" id="equipment-select">
+                                    <React.Fragment>
+                                        {optionList}
+                                    </React.Fragment>
+                                </select>
+                            
+                        </div>
+                        <div className="modal-footer">
+                            <button type="submit">Submit</button>
+                            <a href="#" className="myButtonDiscard" onClick={cancelDiscard}>Cancel</a>      
+                        </div>
+                    </form>
+                    </div>
+                </div>
+            );
+        }
+        return (
+            <div></div>
+        );
+    }
+
+    function cancelDiscard() {
+        setDiscardEquipment(false);
+    }
+
+    function discard(event) {
+        console.log("in discard");
+        event.preventDefault();
+        const form = event.target;
+        const formData = new FormData(form);
+        const equipment = formData.get("equipment")
+
+        console.log(equipment);
+        fetch(`/api/discard_equipment/${equipment}`)
+        .then((response) => response.json())
+        .then((responseData) => {
+            if(responseData.success === true) {
+                setUserActive(responseData.activeUser);
+                setDiscardEquipment(false);
+                document.querySelector(`#equipment_${responseData.equipment_id - 1}`).style.setProperty("filter", "grayscale(100%)")
+                setDrawCardImage("/static/img/deck_back_1.jpg");
+                setDrawCardName("");
+                setDrawCardStrength("");  
+            }          
+        });
+
+    }
+
     function startGame() {
         var modal = document.getElementById("myModal");
         modal.style.display = "none";
         setGameStarted(true);
     }
+
+    //////////////////////////////////////
+    //           Ship phase             //
+    //////////////////////////////////////
+
+    function ShipModal() {
+        console.log("in discardModal")
+        console.log(shipPhase)
+
+
+        if(shipPhase) {
+
+            const optionList = [];
+
+            for(const item of equipment) {
+                // console.log(item);
+                const text = item[`name`];
+                // console.log(text);
+                optionList.push(
+                    <option key={text} value={text}>{text}</option>
+                );
+            }
+
+            return (
+                <div id="myModal" className="modal">
+                    <div className="modal-content">
+                    <form onSubmit={discard}>
+                        <div className="modal-header">
+                            <h2>Welcome to the Siren - Can you make it?</h2>
+                        </div>
+                        <div className="modal-body">
+                            <div className="modal-equipment">
+                            <Equipment equipment={equipment} roomLoaded={roomLoaded} />
+                            </div> 
+                        </div>
+                        <div className="modal-footer">
+                            
+                            <a href="#" className="myButtonDiscard" onClick={cancelDiscard}>Take damage</a>
+                            <label htmlFor="eqiupment-select">Choose a equipment to discard</label>
+                                <select name="equipment" id="equipment-select">
+                                    <React.Fragment>
+                                        {optionList}
+                                    </React.Fragment>
+                                </select>
+                                <button type="submit">Use equipment</button>
+                        </div>
+                    </form>
+                    </div>
+                </div>
+            );
+        }
+        return (
+            <div></div>
+        );
+    }
+
+
+    //////////////////////////////////////
+    //           Main window            //
+    //////////////////////////////////////
 
     return (
         <React.Fragment>
@@ -249,14 +409,16 @@ function Game() {
                      <Equipment equipment={equipment} roomLoaded={roomLoaded} />
                      <div id="deck-container">
                         <Buttons drawCardImage={drawCardImage} />
-                        <img id="shipDeck" className="deck" src="/static/img/deck_back_2.jpg"/>
+                        <ShipDeck image ={shipCardImage} count ={shipCount}/>
                         <DrawDeck image ={drawCardImage} strength={drawCardStrength} name={drawCardName}/> 
                      </div>
                  </div>
                  <Modal userActive={userActive} userCurrent={userCurrent} gameStarted={gameStarted} />
+                 <DiscardModal discardEquipment={discardEquipment} />
+                 <ShipModal />
              </div>
         </React.Fragment>
-    )
+    );
 }
 
 

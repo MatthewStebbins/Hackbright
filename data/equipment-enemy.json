@@ -1,0 +1,62 @@
+[
+    {
+        "equipment": 1,
+        "enemy": 8
+    },
+    {
+        "equipment": 2,
+        "enemy": 1
+    },
+    {
+        "equipment": 2,
+        "enemy": 2
+    },
+    {
+        "equipment": 2,
+        "enemy": 3
+    },
+    {
+        "equipment": 3,
+        "enemy": 2
+    },
+    {
+        "equipment": 3,
+        "enemy": 4
+    },
+    {
+        "equipment": 3,
+        "enemy": 6
+    },
+    {
+        "equipment": 6,
+        "enemy": 1
+    },
+    {
+        "equipment": 6,
+        "enemy": 2
+    },
+    {
+        "equipment": 6,
+        "enemy": 3
+    },
+    {
+        "equipment": 6,
+        "enemy": 4
+    },
+    {
+        "equipment": 6,
+        "enemy": 5
+    },
+    {
+        "equipment": 6,
+        "enemy": 6
+    },
+    {
+        "equipment": 6,
+        "enemy": 7
+    },
+    {
+        "equipment": 6,
+        "enemy": 8
+    }
+]

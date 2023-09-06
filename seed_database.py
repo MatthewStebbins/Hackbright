@@ -40,9 +40,9 @@ equipment_list = []
 for item in equipment_data:
     
     temp = crud.create_equipment(item['name'],
-                                 item['adventurer_id'],
-                                 item['discription'], 
-                                 item['hp'])
+                                    item['adventurer_id'],
+                                    item['discription'], 
+                                    item['hp'])
     equipment_list.append(temp)
 
 with server.app.app_context():

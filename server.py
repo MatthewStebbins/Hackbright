@@ -105,10 +105,10 @@ def load_room():
     equipment = crud.get_equipment_by_adventurer_id_all(advent_id)
 
     return jsonify(image=room.games.image,
-                   crew=room.games.adventurers.name,
-                   equipment=equipment,
-                   activeUser=room.games.active_user,
-                   currentUser=session.get('user'))
+                    crew=room.games.adventurers.name,
+                    equipment=equipment,
+                    activeUser=room.games.active_user,
+                    currentUser=session.get('user'))
 
 @app.route('/api/draw_card')
 def draw_card():

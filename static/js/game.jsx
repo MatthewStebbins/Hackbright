@@ -129,9 +129,9 @@ function Game() {
 
         fetch(`/api/add/${drawCardName}`, {
             Method: 'POST'
-          })
-          .then((response) => response.json())
-          .then((responseData) => {
+        })
+        .then((response) => response.json())
+        .then((responseData) => {
             console.log(responseData.success);
             if(responseData.success === true) {
                 setUserActive(responseData.activeUser);
@@ -191,7 +191,7 @@ function Game() {
                 console.log(cardData.strength);
                 setDrawCardStrength(cardData.strength);
             });
-      }
+    }
     
     function passTurn() {
         // alert('You just passed your turn!');
@@ -208,7 +208,7 @@ function Game() {
                 }
             });
         }
-      }
+    }
 
     function Modal(props) {
         const {userActive, userCurrent, gameStarted} = props;
@@ -403,20 +403,20 @@ function Game() {
 
     return (
         <React.Fragment>
-             <div className="main">
-                 <div className="game">
+            <div className="main">
+                <div className="game">
                     <Portrait portrait={portrait} crew={crew} />
-                     <Equipment equipment={equipment} roomLoaded={roomLoaded} />
-                     <div id="deck-container">
+                    <Equipment equipment={equipment} roomLoaded={roomLoaded} />
+                    <div id="deck-container">
                         <Buttons drawCardImage={drawCardImage} />
                         <ShipDeck image ={shipCardImage} count ={shipCount}/>
                         <DrawDeck image ={drawCardImage} strength={drawCardStrength} name={drawCardName}/> 
-                     </div>
-                 </div>
-                 <Modal userActive={userActive} userCurrent={userCurrent} gameStarted={gameStarted} />
-                 <DiscardModal discardEquipment={discardEquipment} />
-                 <ShipModal />
-             </div>
+                    </div>
+                </div>
+                <Modal userActive={userActive} userCurrent={userCurrent} gameStarted={gameStarted} />
+                <DiscardModal discardEquipment={discardEquipment} />
+                <ShipModal />
+            </div>
         </React.Fragment>
     );
 }

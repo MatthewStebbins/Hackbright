@@ -35,7 +35,7 @@ class Game(db.Model):
                 primary_key=True)
     image = db.Column(db.String, nullable=False)
     adventurer_id = db.Column(db.Integer, db.ForeignKey('adventurers.id'),
-                     nullable=False)
+                        nullable=False)
     active_user = db.Column(db.Integer, db.ForeignKey('users.id'))
 #     draw_deck_num = db.Column(db.Integer,
 #                              db.ForeignKey('decks.deck'),
@@ -81,12 +81,12 @@ class Equipment(db.Model):
     __tablename__ = 'equipments'
 
     id = db.Column(db.Integer,
-                   autoincrement=True,
-                   primary_key=True)
+                    autoincrement=True,
+                    primary_key=True)
     name = db.Column(db.String(25), nullable=False)
     adventurer_id = db.Column(db.Integer,
-                              db.ForeignKey('adventurers.id'),
-                              nullable=False)
+                                db.ForeignKey('adventurers.id'),
+                                nullable=False)
     discription = db.Column(db.String, nullable=False)
     hp = db.Column(db.Integer, nullable=False)
 
@@ -135,8 +135,8 @@ class Deck(db.Model):
                         db.ForeignKey('games.id'),
                         nullable=False)
     enemy_id = db.Column(db.Integer,
-                         db.ForeignKey('enemies.id'),
-                         nullable=False)
+                            db.ForeignKey('enemies.id'),
+                            nullable=False)
     in_deck = db.Column(db.Integer, nullable=False)
     deck_type = db.Column(db.Enum(deck_type), nullable=False)
 
@@ -155,8 +155,8 @@ class Enemy(db.Model):
                 autoincrement=True,
                 primary_key=True)
     name = db.Column(db.String(20),
-                     nullable=False,
-                     unique=True)
+                        nullable=False,
+                        unique=True)
     strength = db.Column(db.Integer, nullable=False)
 
     decks = db.relationship('Deck', uselist=False, back_populates='enemies')
@@ -172,13 +172,13 @@ class Equipment_defeats_enemy(db.Model):
     __tablename__ = 'equipment_defeats_enemies'
 
     equipment_id = db.Column(db.Integer,
-                             db.ForeignKey('equipments.id'),
-                             primary_key=True,
-                             nullable=False)    
+                                db.ForeignKey('equipments.id'),
+                                primary_key=True,
+                                nullable=False)    
     enemy_id = db.Column(db.Integer, 
-                         db.ForeignKey('enemies.id'),
-                         primary_key=True,
-                         nullable=False)
+                            db.ForeignKey('enemies.id'),
+                            primary_key=True,
+                            nullable=False)
     
     def __repr__(self):
         return f'<Equipment_defeats_enemy enemy id={self.enemy_id}, equipment id={self.equipment_id}>'
@@ -196,8 +196,8 @@ class User(db.Model):
                 autoincrement=True,
                 primary_key=True)
     room_id = db.Column(db.Integer,
-                     db.ForeignKey('rooms.id'),
-                     nullable=False)
+                        db.ForeignKey('rooms.id'),
+                        nullable=False)
     role = db.Column(db.Enum(role), nullable=False)
     user_passed = db.Column(db.Boolean, default=False)
 

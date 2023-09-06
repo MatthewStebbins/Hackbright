@@ -33,7 +33,7 @@ function createRoom(evt) {
     // console.log("calling fetch");
     fetch("/create-room", {
         method: "POST"
-      })
+    })
     .then((response) => response.json())
     .then((createRoomJSON) => {
         // console.log(`in response, createRoom = ${createRoomJSON.status} roomcode = ${createRoomJSON.roomcode}`);

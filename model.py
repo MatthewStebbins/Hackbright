@@ -5,6 +5,13 @@ from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
 
 # ********************************************************
+# ************ Association Table definitions *************
+
+# equipment_enemy = db.Table('equipment_enemy',
+#                         db.Column('equipment_id', db.Integer, db.ForeignKey('equipments.id')),
+#                         db.Column('enemy_id', db.Integer, db.ForeignKey('enemies.id')))
+
+# ********************************************************
 # ************** Database Table definitions **************
 
 class Room(db.Model):
@@ -12,13 +19,13 @@ class Room(db.Model):
     __tablename__ = 'rooms'
 
     id = db.Column(db.Integer,
-                   autoincrement=True,
-                   primary_key=True)
+                    autoincrement=True,
+                    primary_key=True)
     game_id = db.Column(db.Integer, db.ForeignKey('games.id'),
-                     nullable=False,
-                     unique=True)
+                    nullable=False,
+                    unique=True)
     created_at = db.Column(db.DateTime,
-                           nullable=False, default=db.func.current_timestamp())
+                            nullable=False, default=db.func.current_timestamp())
     
     users = db.relationship('User', back_populates='rooms')
     games = db.relationship('Game', uselist=False, back_populates='rooms')
@@ -34,6 +41,7 @@ class Game(db.Model):
                 autoincrement=True,
                 primary_key=True)
     image = db.Column(db.String, nullable=False)
+    damage = db.Column(db.Integer, nullable=False, default= 0)
     adventurer_id = db.Column(db.Integer, db.ForeignKey('adventurers.id'),
                         nullable=False)
     active_user = db.Column(db.Integer, db.ForeignKey('users.id'))
@@ -49,25 +57,22 @@ class Game(db.Model):
     adventurers = db.relationship('Adventurer', uselist=False, back_populates='games')
     decks = db.relationship('Deck', back_populates='games')    
     equipment_states = db.relationship('Equipment_state', back_populates='games')
-#     def __repr__(self):
-#         return f'Game id={self.id}, aventurer_id={self.adventurer_id}>'
 
+    def __repr__(self):
+        return f'Game id={self.id}, aventurer_id={self.adventurer_id}>'
 
 class Adventurer(db.Model):
 
     __tablename__ = 'adventurers'
 
     id = db.Column(db.Integer,
-                   autoincrement=True,
-                   primary_key=True)
+                    autoincrement=True,
+                    primary_key=True)
     name = db.Column(db.String(12),
-                     nullable=False,
-                     unique=True) # the name of the adventurer
+                    nullable=False,
+                    unique=True) # the name of the adventurer
     # picture = db.Column(db.String, nullable=False)  # path to the .png of the adventurer
     health = db.Column(db.Integer, nullable=False)  # base health 
-    # deck_to_use = db.Column(db.Integer,             # which deck to use for the adventurer
-                            # db.ForeignKey('decks.deck'),
-                            # nullable=False) 
 
     games = db.relationship('Game', back_populates='adventurers')
     equipments = db.relationship('Equipment', back_populates='adventurers')
@@ -92,9 +97,7 @@ class Equipment(db.Model):
 
     adventurers = db.relationship('Adventurer', back_populates='equipments')
     equipment_states = db.relationship('Equipment_state', back_populates='equipments')
-    # enemies = db.relationship('Enemy',
-                            # secondary='Equipment_defeats_enemy',
-                            #   back_populates='equipments')
+    equipment_defeats_enemies = db.relationship('Equipment_defeats_enemy', back_populates='equipments')
 
     def __repr__(self):
         return f'<Equipment id={self.id}, name={self.name}>'
@@ -160,6 +163,7 @@ class Enemy(db.Model):
     strength = db.Column(db.Integer, nullable=False)
 
     decks = db.relationship('Deck', uselist=False, back_populates='enemies')
+    # equipment_defeats_enemies = db.relationship('Enemy', back_populates='enemies')
 #     equipments = db.relationship('Equipment',
 #                             secondary='Equipment_defeats_enemy',
 #                               back_populates='enemies')
@@ -180,13 +184,14 @@ class Equipment_defeats_enemy(db.Model):
                             primary_key=True,
                             nullable=False)
     
+    equipments = db.relationship('Equipment', back_populates='equipment_defeats_enemies')
+
     def __repr__(self):
         return f'<Equipment_defeats_enemy enemy id={self.enemy_id}, equipment id={self.equipment_id}>'
 
 class role(enum.Enum):
     Host = 'Host'
     Player = 'Player'
-
 
 class User(db.Model):
 
@@ -207,13 +212,6 @@ class User(db.Model):
 
     def __repr__(self):
         return f'<User id={self.id}, room_id={self.room_id}, user_passed={self.user_passed}>'
-
-# class User_stats(db.Model):
-
-#     __tablename__ = 'user_statistics'
-
-#     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-
 
 
 # ****************************************

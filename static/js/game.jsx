@@ -126,7 +126,6 @@ function Game() {
     }
 
     function addCard() {
-
         fetch(`/api/add/${drawCardName}`, {
             Method: 'POST'
         })
@@ -366,7 +365,7 @@ function Game() {
             return (
                 <div id="myModal" className="modal">
                     <div className="modal-content">
-                    <form onSubmit={discard}>
+                    <form onSubmit={combat}>
                         <div className="modal-header">
                             <h2>Welcome to the Siren - Can you make it?</h2>
                         </div>
@@ -396,6 +395,29 @@ function Game() {
         );
     }
 
+    function combat(event) {
+        event.preventDefault();
+        const form = event.target;
+        const formData = new FormData(form);
+        const equipment = formData.get("equipment")
+
+        
+
+        console.log(equipment);
+        fetch(`/api/ship/combat/${equipment}`)
+        .then((response) => response.json())
+        .then((responseData) => {
+            if(responseData.success === true) {
+                setUserActive(responseData.activeUser);
+                setDiscardEquipment(false);
+                document.querySelector(`#equipment_${responseData.equipment_id - 1}`).style.setProperty("filter", "grayscale(100%)")
+                setDrawCardImage("/static/img/deck_back_1.jpg");
+                setDrawCardName("");
+                setDrawCardStrength("");  
+            }          
+        });
+
+    }
 
     //////////////////////////////////////
     //           Main window            //

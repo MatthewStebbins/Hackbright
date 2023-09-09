@@ -81,8 +81,9 @@ def todo():
 
 @app.route('/test')
 def test():
-    card = crud.get_random_card(1)
-    crud.update_deck(card.game_id, card.enemy_id)
+    
+    test = crud.get_active_equipment_by_enemy_id(1,2)
+
     return render_template('todo.html')
 
 @app.route('/game')
@@ -174,14 +175,40 @@ def startship():
     card = crud.get_random_card(game_id, deck_type.Ship)
     crud.remove_card(card.game_id, card.enemy_id, deck_type.Ship)
 
-    # effective_active_equipment = crud.
+    effective_active_equipment = crud.get_active_equipment_by_enemy_id(game_id, card.enemies.id)
 
     hp = crud.get_total_hp(room)
     return jsonify(image='/static/img/Enemies/test.png',
                     name=card.enemies.name,
                     strength=card.enemies.strength,
-                    hp=hp)
+                    hp=hp,
+                    equipment=effective_active_equipment)
 
+@app.route('/api/ship/combat')
+def combat():
+    room_id = session.get('room')
+    room = crud.get_room_by_id(room_id)
+    game_id = room.game_id
+    equipment_id = request.args['equipment']
+    enemy_id = request.args['enemy']
+    damage = request.args['damage']
+
+    # Handle previous card
+    crud.take_damage(game_id, damage)
+    if equipment_id == 6:
+        termial_detonator(game_id, enemy_id)
+    
+    card = crud.get_random_card(game_id, deck_type.Ship)
+    crud.remove_card(card.game_id, card.enemy_id, deck_type.Ship)
+
+    effective_active_equipment = crud.get_active_equipment_by_enemy_id(game_id, card.enemies.id)
+
+    hp = crud.get_total_hp(room)
+    return jsonify(image='/static/img/Enemies/test.png',
+                    name=card.enemies.name,
+                    strength=card.enemies.strength,
+                    hp=hp,
+                    equipment=effective_active_equipment)
 
 
 ############################################
@@ -218,6 +245,10 @@ def get_adventurer_image():
         image = results['data'][2]['images']['jpg']['image_url']
 
     return image    
+
+def termial_detonator(game_id, enemy_id):
+    crud.remove_card_all(game_id, enemy_id, deck_type.Ship)
+    crud.discard_equipment(game_id, 6)
 
 if __name__ == '__main__':
     connect_to_db(app)

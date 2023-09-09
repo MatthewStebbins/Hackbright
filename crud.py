@@ -39,6 +39,13 @@ def set_active_user(user_id, room_id):
     db.session.add(room)
     db.session.commit()    
 
+def take_damage(game_id, damage):
+    game = Game.query.get(game_id)
+
+    game.damage += damage
+    db.session.add(game)
+    db.session.commit()
+
 ########## User #############
 
 def create_user(room_id, role=role.Player):
@@ -164,12 +171,20 @@ def get_random_card(game_id, d_type):
 def remove_card(game_id, enemy_id, deck_type):
     card = Deck.query.filter(Deck.game_id == game_id,
                             Deck.enemy_id == enemy_id,
-                             Deck.deck_type == deck_type).first()
+                            Deck.deck_type == deck_type).first()
     
     if card.in_deck <= 1:
         db.session.delete(card)
     else:
         card.in_deck -= 1
+    db.session.commit()
+
+def remove_card_all(game_id, enemy_id, deck_type):
+    card = Deck.query.filter(Deck.game_id == game_id,
+                            Deck.enemy_id == enemy_id,
+                            Deck.deck_type == deck_type).first()
+    
+    db.session.delete(card)
     db.session.commit()
 
 def add_card(game_id, enemy_id, deck_type):
@@ -217,10 +232,31 @@ def discard_equipment(game_id, equipment_id):
 def get_all_active_equipment(game_id):
     return Equipment_state.query.filter(Equipment_state.game_id == game_id, Equipment_state.state == True).all()
 
+def get_active_equipment_by_enemy_id(game_id, enemy_id):
+    game = Game.query.get(game_id)
+    equipments = get_equipment_by_adventurer_id_all(game.adventurers.id)
+
+    active_equipment_for_enemy = []
+    for equipment in equipments:
+        print(equipment)
+        equip_id = get_equipment_by_name(equipment['name'])
+        if( len(get_enemies_by_equipment_id(equip_id, enemy_id)) >= 1):
+            active_equipment_for_enemy.append(equipment)
+    
+    print(active_equipment_for_enemy)
+
+    return active_equipment_for_enemy
+
+
 ########## Equipment\enemy interactions ###########
 
 def create_equipment_enemy(equip_id, enemy_id):
     return Equipment_defeats_enemy(equipment_id=equip_id, enemy_id=enemy_id)
+
+def get_enemies_by_equipment_id(equip_id, enemy_id):
+    print(equip_id)
+    return Equipment_defeats_enemy.query.filter(Equipment_defeats_enemy.equipment_id == equip_id,
+                                                Equipment_defeats_enemy.enemy_id == enemy_id).all()
 
 
 if __name__ == '__main__':

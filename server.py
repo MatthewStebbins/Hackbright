@@ -81,14 +81,25 @@ def todo():
 
 @app.route('/test')
 def test():
-    
-    test = crud.get_active_equipment_by_enemy_id(1,2)
-
-    return render_template('todo.html')
+    state = win_loss(1, 1)
+    print(state)
+    if state == '':
+        return redirect('/rules')
+    return state
+    #return render_template('todo.html')
 
 @app.route('/game')
 def game():
     return render_template('game.html')
+
+@app.route('/win')
+def win():
+    return render_template('win.html')
+
+@app.route('/loss')
+def loss():
+    return render_template('loss.html')
+
 
 ############################################
 #              API functions               #
@@ -128,7 +139,7 @@ def draw_card():
 def passTurn():
     user_id = session.get('user')
     room_id = session.get('room')
-    print(user_id)
+    # print(user_id)
 
 
     success = crud.set_user_passed(user_id)
@@ -166,17 +177,17 @@ def discardEquipment(equipment_name):
 
     return jsonify(success=success, equipment_id=equipment_id, activeUser=active_user)
 
-@app.route('/api/startShip')
+@app.route('/api/ship/start')
 def startship():
     room_id = session.get('room')
     room = crud.get_room_by_id(room_id)
     game_id = room.game_id
 
     card = crud.get_random_card(game_id, deck_type.Ship)
-    crud.remove_card(card.game_id, card.enemy_id, deck_type.Ship)
+    # crud.remove_card(game_id, card.enemy_id, deck_type.Ship)
 
     effective_active_equipment = crud.get_active_equipment_by_enemy_id(game_id, card.enemies.id)
-
+    print(effective_active_equipment)
     hp = crud.get_total_hp(room)
     return jsonify(image='/static/img/Enemies/test.png',
                     name=card.enemies.name,
@@ -189,21 +200,32 @@ def combat():
     room_id = session.get('room')
     room = crud.get_room_by_id(room_id)
     game_id = room.game_id
-    equipment_id = request.args['equipment']
-    enemy_id = request.args['enemy']
-    damage = request.args['damage']
+    equipment_id = request.args.get('equipment')
+    enemy_name = request.args.get('enemy')
+    damage = request.args.get('damage')
+    print('equipment: ', equipment_id)
+    print('damage: ', damage)
 
     # Handle previous card
     crud.take_damage(game_id, damage)
     if equipment_id == 6:
+        enemy_id = crud.get_enemy_id_by_name(enemy_name)
         termial_detonator(game_id, enemy_id)
+
+    # Check if game is over
+
+    hp = crud.get_total_hp(room)
+    state = win_loss(hp)
+    if state != '':
+        return state
     
+    # If game is not over load next enemy
+
     card = crud.get_random_card(game_id, deck_type.Ship)
-    crud.remove_card(card.game_id, card.enemy_id, deck_type.Ship)
+    crud.remove_card(game_id, card.enemy_id, deck_type.Ship)
 
     effective_active_equipment = crud.get_active_equipment_by_enemy_id(game_id, card.enemies.id)
 
-    hp = crud.get_total_hp(room)
     return jsonify(image='/static/img/Enemies/test.png',
                     name=card.enemies.name,
                     strength=card.enemies.strength,
@@ -249,6 +271,25 @@ def get_adventurer_image():
 def termial_detonator(game_id, enemy_id):
     crud.remove_card_all(game_id, enemy_id, deck_type.Ship)
     crud.discard_equipment(game_id, 6)
+
+def win_loss(hp, game_id):
+    state = ''
+    print('HP: ',hp)
+    print('game_id: ',game_id)
+    number_of_cards = crud.cards_in_deck(game_id, deck_type.Ship)
+    if hp <= 0:
+        state = loss()
+    elif number_of_cards <= 0:
+        state = win()
+
+    return state
+
+def loss():
+    return redirect('/loss')
+
+def win():
+    return redirect('/win')
+
 
 if __name__ == '__main__':
     connect_to_db(app)

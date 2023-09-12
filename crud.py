@@ -42,7 +42,7 @@ def set_active_user(user_id, room_id):
 def take_damage(game_id, damage):
     game = Game.query.get(game_id)
 
-    game.damage += damage
+    game.damage += int(damage)
     db.session.add(game)
     db.session.commit()
 
@@ -64,7 +64,7 @@ def set_user_passed(id):
 
 def get_next_active_user(user_id, room_id):
     users_in_room_not_passed = db.session.query(User.id).filter(User.room_id == room_id, User.user_passed == False).order_by(User.id).all()
-    print(users_in_room_not_passed)
+    # print(users_in_room_not_passed)
     current_index = users_in_room_not_passed.index((user_id,))
     ship_phase = False
     if len(users_in_room_not_passed) <= 2:
@@ -89,12 +89,12 @@ def get_adventurer_by_name(name):
 
 def get_total_hp(room):
     game_id = room.game_id
-    advent_id = room.games.advent_id
+    advent_id = room.games.adventurer_id
     
     total_hp = 0
-    health = db.session.query(adventurer.health).filter(adventurer.adventurer_id == advent_id).first()
-    print('adventurer HP: ' + hp)
-    total_hp += health
+    health = db.session.query(Adventurer.health).filter(Adventurer.id == advent_id).first()
+    print('adventurer HP: ' + str(health[0]))
+    total_hp += health[0]
 
     active_equipments = get_all_active_equipment(game_id)
 
@@ -103,7 +103,9 @@ def get_total_hp(room):
         if hp != 0:
             total_hp += hp
 
-    print('Total hp:' + total_hp)
+    total_hp = total_hp - room.games.damage
+
+    print('Total hp:' + str(total_hp))
 
     return total_hp
 
@@ -154,18 +156,18 @@ def build_draw_deck(game_id):
 
 def get_random_card(game_id, d_type):
     cards = Deck.query.filter(Deck.game_id == game_id, Deck.deck_type == d_type ).all()
-    print(cards)
+    # print(cards)
 
     if len(cards) >= 1:
         weights = []
         for card in cards:
             weights.append(card.in_deck)
-        print(weights)
+        # print(weights)
         card = random.choices(cards, weights=weights)
         card = card[0]
     else:
         card = -1
-    print(card)
+    # print(card)
     return card
 
 def remove_card(game_id, enemy_id, deck_type):
@@ -190,7 +192,7 @@ def remove_card_all(game_id, enemy_id, deck_type):
 def add_card(game_id, enemy_id, deck_type):
     card = Deck.query.filter(Deck.game_id == game_id,
                             Deck.enemy_id == enemy_id,
-                             Deck.deck_type == deck_type).first()
+                            Deck.deck_type == deck_type).first()
     
     if card == None:
         card = crud.create_deck(game_id, enemy_id, 1, deck_type=deck_type.Ship)        
@@ -200,6 +202,15 @@ def add_card(game_id, enemy_id, deck_type):
     db.session.commit()    
 
     return True
+
+def cards_in_deck(game_id, deck_type):
+    left = db.session.query(func.sum(Deck.in_deck)).filter(Deck.game_id == game_id, Deck.deck_type == deck_type).all()
+    left = left[0][0]
+    if left == None:
+        left = 0
+    print(left)
+
+    return left
 
 ########## Equipment_state ###########
 
@@ -238,12 +249,12 @@ def get_active_equipment_by_enemy_id(game_id, enemy_id):
 
     active_equipment_for_enemy = []
     for equipment in equipments:
-        print(equipment)
+        # print(equipment)
         equip_id = get_equipment_by_name(equipment['name'])
         if( len(get_enemies_by_equipment_id(equip_id, enemy_id)) >= 1):
             active_equipment_for_enemy.append(equipment)
     
-    print(active_equipment_for_enemy)
+    # print(active_equipment_for_enemy)
 
     return active_equipment_for_enemy
 
@@ -254,7 +265,7 @@ def create_equipment_enemy(equip_id, enemy_id):
     return Equipment_defeats_enemy(equipment_id=equip_id, enemy_id=enemy_id)
 
 def get_enemies_by_equipment_id(equip_id, enemy_id):
-    print(equip_id)
+    # print(equip_id)
     return Equipment_defeats_enemy.query.filter(Equipment_defeats_enemy.equipment_id == equip_id,
                                                 Equipment_defeats_enemy.enemy_id == enemy_id).all()
 

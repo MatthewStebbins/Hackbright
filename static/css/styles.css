@@ -157,18 +157,18 @@ body {
     opacity: 0;
     transition: .5s ease;
     background-color: #008CBA;
-  }
+}
 
-  .container {
+.container {
     position: relative;
     width: 50%;
-  }
+}
 
- .container:hover .overlay {
+.container:hover .overlay {
     opacity: 1;
-  }
+}
 
-  .text {
+.text {
     color: white;
     font-size: 20px;
     position: absolute;
@@ -176,7 +176,7 @@ body {
     left: 50%;
     transform: translate(-50%, -50%);
     -ms-transform: translate(-50%, -50%);
-  }
+}
 
 #deck-container {
     display: flex;
@@ -228,7 +228,7 @@ break{
     width: 0px; 
     height: 0px; 
     overflow: hidden;
-  }
+}
 
 /******** Buttons **********/
 
@@ -330,10 +330,10 @@ break{
     overflow: auto; /* Enable scroll if needed */
     background-color: rgb(0,0,0); /* Fallback color */
     background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-  }
-  
+}
+
   /* Modal Content */
-  .modal-content {
+.modal-content {
     position: relative;
     background-color: #fefefe;
     margin: auto;
@@ -345,51 +345,51 @@ break{
     -webkit-animation-duration: 0.4s;
     animation-name: animatetop;
     animation-duration: 0.4s
-  }
-  
+}
+
   /* Add Animation */
-  @-webkit-keyframes animatetop {
+@-webkit-keyframes animatetop {
     from {top:-300px; opacity:0} 
     to {top:0; opacity:1}
-  }
-  
-  @keyframes animatetop {
+}
+
+@keyframes animatetop {
     from {top:-300px; opacity:0}
     to {top:0; opacity:1}
-  }
-  
+}
+
   /* The Close Button */
-  .close {
+.close {
     color: white;
     float: right;
     font-size: 28px;
     font-weight: bold;
-  }
-  
-  .close:hover,
-  .close:focus {
+}
+
+.close:hover,
+.close:focus {
     color: #000;
     text-decoration: none;
     cursor: pointer;
-  }
-  
-  .modal-header {
+}
+
+.modal-header {
     padding: 2px 16px;
     background-color: #5cb85c;
     color: white;
-  }
-  
-  .modal-body {padding: 2px 16px;}
-  
-  .modal-footer {
+}
+
+.modal-body {padding: 2px 16px;}
+
+.modal-footer {
     padding: 2px 16px;
     background-color: #5cb85c;
     color: white;
-  }
+}
 
   /******** Discard Modal overrides **********/
 
-  .modal-equipment {
+.modal-equipment {
     background: rgb(6,44,67);
     background: linear-gradient(0deg, rgba(6,44,67,0.9) 0%, rgba(6,44,67,0.9) 31%, rgba(85,145,169,0.9) 100%);
     display: flex;
@@ -406,4 +406,4 @@ break{
     font-family: "Syne Mono", monospace;
     font-size: 100%;
     color: #ced7e0;
-  }
+}

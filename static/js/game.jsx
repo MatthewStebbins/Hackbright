@@ -10,9 +10,16 @@ function Game() {
     const [drawCardName, setDrawCardName] = React.useState("");
     const [userActive, setUserActive] = React.useState(0);
     const [userCurrent, setUserCurrent] = React.useState(0);
+    // DISCARD
     const [discardEquipment, setDiscardEquipment] = React.useState(false);
+    // SHIP
     const [shipCount, setShipCount] = React.useState(0);
     const [shipPhase, setShipPhase] = React.useState(false);
+    const [shipImage, setShipImage] = React.useState("Empty");
+    const [shipName, setShipName] = React.useState("");
+    const [shipStrength, setShipStrength] = React.useState(0);
+    const [shipEquipment, setShipEquipment] = React.useState({});
+    const [HP, setHP] = React.useState(0);
 
 // Load webpage 
     
@@ -20,17 +27,18 @@ function Game() {
         fetch('/api/load_room')
         .then((response) => response.json())
         .then((gameData) => {
-            console.log(gameData.image);
-            console.log(gameData.crew);
-            console.log(gameData.equipment);
-            console.log(gameData.activeUser);
-            console.log(gameData.currentUser);
+            // console.log(gameData);
+            // console.log(gameData.image);
+            // console.log(gameData.crew);
+            // console.log(gameData.equipment);
+            // console.log(gameData.activeUser);
+            // console.log(gameData.currentUser);
             setPortrait(gameData.image);
             setCrew(gameData.crew);
             setEquipment(gameData.equipment);
             setUserActive(gameData.activeUser);
             setUserCurrent(gameData.currentUser);
-            console.log(roomLoaded)
+            // console.log(roomLoaded)
         })
         .finally(() => {
             setRoomLoaded(true);
@@ -54,9 +62,9 @@ function Game() {
         // console.log(equipment)
 
         if(roomLoaded) {
-            for(const item of equipment) {
-                // console.log(item)
-                const text = item[`discription`];
+            for(const item in equipment) {
+                console.log(equipment[item]);
+                const text = equipment[item].discription;
                 equipmentList.push(
                     <div key={`div_${index}`} id="flex-cards">
                         <div className="container">
@@ -88,7 +96,7 @@ function Game() {
         return (
             <React.Fragment>
                 {equipmentList}
-            </ React.Fragment>
+            </React.Fragment>
         );
     }
 
@@ -183,11 +191,11 @@ function Game() {
             fetch('/api/draw_card')
             .then((response) => response.json())
             .then((cardData) => {
-                console.log(cardData.image);
+                // console.log(cardData.image);
                 setDrawCardImage(cardData.image);
-                console.log(cardData.name);
+                // console.log(cardData.name);
                 setDrawCardName(cardData.name);
-                console.log(cardData.strength);
+                // console.log(cardData.strength);
                 setDrawCardStrength(cardData.strength);
             });
     }
@@ -198,12 +206,12 @@ function Game() {
             fetch('/api/pass')
             .then((response) => response.json())
             .then((responseData) => {
-                console.log(responseData.success);
+                // console.log(responseData.success);
                 if(responseData.success) {
                     setUserActive(responseData.activeUser);
                 }
                 if(responseData.shipPhase) {
-                    setShipPhase(responseData.shipPhase);
+                    startShip()
                 }
             });
         }
@@ -256,8 +264,8 @@ function Game() {
     }
 
     function DiscardModal() {
-        console.log("in discardModal")
-        console.log(discardEquipment)
+        // console.log("in discardModal")
+        // console.log(discardEquipment)
 
 
         if(discardEquipment) {
@@ -344,22 +352,45 @@ function Game() {
     //           Ship phase             //
     //////////////////////////////////////
 
-    function ShipModal() {
-        console.log("in discardModal")
-        console.log(shipPhase)
-
+    function ShipModal(props) {
+        const {shipEquipment} = props;        
 
         if(shipPhase) {
+            console.log("in shipModal")
+            // console.log(shipPhase)
+            // console.log(shipImage)
+            console.log(shipEquipment)
 
             const optionList = [];
+            const equipmentList = [];
+            var index = 0;
 
-            for(const item of equipment) {
-                // console.log(item);
-                const text = item[`name`];
-                // console.log(text);
+            optionList.push(
+                <option key='damage' value='damage'>Take {shipStrength} damage</option>
+            )
+            
+            for(const item in shipEquipment) {
+                console.log(item);
+                const text = shipEquipment[item].name;
+                console.log(text);
                 optionList.push(
                     <option key={text} value={text}>{text}</option>
                 );
+            }
+            for(const item in shipEquipment) {
+                console.log(shipEquipment[item]);
+                const text = shipEquipment[item].discription;
+                equipmentList.push(
+                    <div key={`div_${index}`} id="flex-cards">
+                        <div className="container">
+                            <img key={index} className="equipment_cards" id={`equipment_${index}`} src={`/static/img/${crew}/equipment_${index}.png`}/>
+                            <div className="overlay">
+                                <div className="text">{text}</div>
+                            </div>
+                        </div>
+                    </div>
+                );
+                index++; 
             }
 
             return (
@@ -371,19 +402,19 @@ function Game() {
                         </div>
                         <div className="modal-body">
                             <div className="modal-equipment">
-                            <Equipment equipment={equipment} roomLoaded={roomLoaded} />
+                            <React.Fragment>
+                                {equipmentList}
+                            </React.Fragment>
                             </div> 
                         </div>
                         <div className="modal-footer">
-                            
-                            <a href="#" className="myButtonDiscard" onClick={cancelDiscard}>Take damage</a>
                             <label htmlFor="eqiupment-select">Choose a equipment to discard</label>
                                 <select name="equipment" id="equipment-select">
                                     <React.Fragment>
                                         {optionList}
                                     </React.Fragment>
                                 </select>
-                                <button type="submit">Use equipment</button>
+                                <button type="submit">Select</button>
                         </div>
                     </form>
                     </div>
@@ -395,26 +426,54 @@ function Game() {
         );
     }
 
+    function startShip() {
+        
+        console.log("getting ship data")
+        fetch('/api/ship/start')
+        .then((response) => response.json())
+        .then((responseData) => {
+            // console.log(responseData);
+            // console.log(shipImage)
+            // console.log(responseData.image)
+            setShipImage((prevImage) => responseData.image);
+            // console.log(shipImage)
+            setShipName((prevName) => responseData.name)
+            setShipStrength((prevStrength) => responseData.strength);
+            setHP((prevHp) => responseData.hp);
+            setShipEquipment((prevShipEquipment) => responseData.equipment);
+
+        })
+        .finally(() => {
+            setShipPhase(true);
+            // console.log(shipImage)
+        });
+    }
+
     function combat(event) {
         event.preventDefault();
         const form = event.target;
         const formData = new FormData(form);
-        const equipment = formData.get("equipment")
-
-        
+        const equipment = formData.get("equipment");
+        var queryString;
 
         console.log(equipment);
-        fetch(`/api/ship/combat/${equipment}`)
+        if(equipment == 'damage') {
+            queryString = new URLSearchParams({equipment:equipment, enemy:shipName, damage:String(shipStrength)}).toString();
+        }
+        else {
+            queryString = new URLSearchParams({equipment:equipment, enemy:drawCardName, damage:'0'}).toString();            
+        }
+        const url = `/api/ship/combat?${queryString}`;
+        console.log(url)
+        fetch(url)
         .then((response) => response.json())
         .then((responseData) => {
-            if(responseData.success === true) {
-                setUserActive(responseData.activeUser);
-                setDiscardEquipment(false);
-                document.querySelector(`#equipment_${responseData.equipment_id - 1}`).style.setProperty("filter", "grayscale(100%)")
-                setDrawCardImage("/static/img/deck_back_1.jpg");
-                setDrawCardName("");
-                setDrawCardStrength("");  
-            }          
+            setShipImage(responseData.image)
+            setShipName(responseData.name)
+            setShipStrength(responseData.strength);
+            setHP(responseData.hp);
+            setShipEquipment(responseData.equipment);
+            console.log(shipEquipment)
         });
 
     }
@@ -437,7 +496,7 @@ function Game() {
                 </div>
                 <Modal userActive={userActive} userCurrent={userCurrent} gameStarted={gameStarted} />
                 <DiscardModal discardEquipment={discardEquipment} />
-                <ShipModal />
+                <ShipModal shipEquipment={shipEquipment}/>
             </div>
         </React.Fragment>
     );

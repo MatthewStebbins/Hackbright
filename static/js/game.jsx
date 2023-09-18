@@ -1,3 +1,47 @@
+////////////////////////////////////////////////////////////////////////////////////////////////
+//                 Socket code                                                                //
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+const socket = io.connect('http://localhost:5000', {
+    transports: ['websocket'], // Use WebSocket transport for development
+    upgrade: false, // Prevent automatic transport upgrade
+    reconnection: true, // Enable reconnection
+    reconnectionDelay: 1000, // Reconnect after 1 second (adjust as needed)
+});
+
+socket.on('connect', () => {
+    console.log('Connected to Flask-SocketIO server');
+});
+
+socket.on('disconnect', () => {
+    console.log('disconnected from Flask-SocketIO server')
+});
+
+socket.once('start game', () => {
+    const modal = document.getElementById("myModal");
+    modal.style.display = "none";
+});
+
+function joinRoom(user) {
+    socket.emit('join', user, (response) => {
+        console.log(response);
+    });
+}
+
+function startGameEmit(user) {
+    console.log("In startGame")
+    socket.emit('start', user, () => {
+    });
+}
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////
+//                 React code                                                                 //
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 function Game() {
     const [portrait, setPortrait] = React.useState("");
     const [crew, setCrew] = React.useState("");
@@ -45,16 +89,13 @@ function Game() {
         });
     }, []);
 
-// Check for updates
-    
-    // React.useEffect(() => {
-    //     if(roomLoaded === true) {
-    //         setTimeout(() => {
-    //         setCount((count) => count + 1);
-    //         }, 5000);
-    //         console.log(count);
-    //     }
-    // });
+    React.useEffect(() => {
+        if (gameStarted) {
+            console.log("before startGame");
+            startGameEmit(userCurrent);
+            console.log("after startGame");
+        }
+    }, [gameStarted])
 
     function Equipment() {
         const equipmentList = [];
@@ -62,8 +103,9 @@ function Game() {
         // console.log(equipment)
 
         if(roomLoaded) {
+            joinRoom(userCurrent);
             for(const item in equipment) {
-                console.log(equipment[item]);
+            //    console.log(equipment[item]);
                 const text = equipment[item].discription;
                 equipmentList.push(
                     <div key={`div_${index}`} id="flex-cards">
@@ -343,8 +385,6 @@ function Game() {
     }
 
     function startGame() {
-        var modal = document.getElementById("myModal");
-        modal.style.display = "none";
         setGameStarted(true);
     }
 
@@ -505,3 +545,5 @@ function Game() {
 
 
 ReactDOM.render(<Game />, document.querySelector('#root'));
+
+////////////////////////////////////////////////////////////////////////////////////////////////

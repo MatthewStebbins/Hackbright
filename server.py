@@ -1,6 +1,8 @@
 import requests
 from random import choice, randint
 from flask import Flask, render_template, request, redirect, jsonify, session
+from flask_socketio import SocketIO, send, join_room, leave_room, rooms, emit
+from flask_cors import CORS
 from model import connect_to_db, db, role, deck_type
 import crud
 import time
@@ -9,8 +11,9 @@ URL = "https://api.jikan.moe/v4/characters?page="
 
 app = Flask(__name__)
 app.secret_key = "dev"
+CORS(app)
+socketio = SocketIO(app, cors_allowed_origins='*')
 
-current_rooms = [12345, 54321, 11111]
 
 EQUIPMENT = {
     '0':"Defeat the Hive Mother",
@@ -20,7 +23,6 @@ EQUIPMENT = {
     '4':"Health: +3",
     '5':"Defeat one Alien before exploring the Ship"
 }
-
 
 @app.route('/')
 def main():
@@ -50,7 +52,7 @@ def create_room():
     return payload
 
 @app.route("/join-room")
-def join_room():
+def join_gameroom():
     roomcode = request.args['room']
     # print(roomcode)
 
@@ -67,7 +69,7 @@ def game_room(roomcode):
     room = crud.get_room_by_id(roomcode)
     user = check_user(user_id, room.id)
     session['room'] = room.id
-
+    print(session.get('room'))
     if room:
         return render_template('game.html')
         # return render_template('gameroom.html', roomcode=roomcode, image=room.games.image, crew=room.games.adventurers.name)   
@@ -255,7 +257,6 @@ def check_user(user_id, room_id, role=role.Player):
         return user
 
 def get_adventurer_image():
-
     bad_url = 'https://cdn.myanimelist.net/img/sp/icon/apple-touch-icon-256.png'
     image = bad_url
 
@@ -291,6 +292,42 @@ def win():
     return redirect('/win')
 
 
+############################################
+#           socket functions               #
+############################################
+
+@socketio.on('connect')
+def handle_connect():
+    session['sid'] = request.sid
+    print('Client connected: ', session['sid'])
+    print(rooms())
+
+@socketio.on('disconnect')
+def handle_disconnect():
+    print('Client disconnected')
+
+@socketio.on('join')
+def on_join(user_id):
+    user = crud.get_user_by_id(user_id)
+    room_id = user.room_id
+    join_room(room_id)
+    print(rooms())
+    send('Player has entered the room.', to=room_id)
+    return f'You have entered room: {room_id}'
+
+@socketio.on('leave')
+def on_leave(room):
+    leave_room(room)
+    send('player has lefted the room.', to=room)
+    return 'You have lefted the room.'
+
+@socketio.on('start')
+def start_game(user_id):
+    print('Starting game')
+    user = crud.get_user_by_id(user_id)
+    room_id = user.room_id
+    emit('start game', to=room_id)
+
 if __name__ == '__main__':
     connect_to_db(app)
-    app.run(debug=True, host="0.0.0.0")
+    socketio.run(app, debug=True, host="0.0.0.0")

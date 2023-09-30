@@ -45,6 +45,7 @@ class Game(db.Model):
     adventurer_id = db.Column(db.Integer, db.ForeignKey('adventurers.id'),
                         nullable=False)
     active_user = db.Column(db.Integer, db.ForeignKey('users.id'))
+    started = db.Column(db.Boolean, nullable=False, default=False)
     
     rooms = db.relationship('Room', back_populates='games')
     users = db.relationship('User', back_populates='games')

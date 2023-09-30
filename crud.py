@@ -46,6 +46,17 @@ def take_damage(game_id, damage):
     db.session.add(game)
     db.session.commit()
 
+def start_game(game_id):
+    game = Game.query.get(game_id)
+    game.started = True
+    db.session.add(game)
+    db.session.commit()
+
+def get_active_user(room_id):
+    room = Room.query.filter(Room.id == room_id).first()
+    return room.games.active_user
+
+
 ########## User #############
 
 def create_user(room_id, role=role.Player):
@@ -56,16 +67,18 @@ def get_user_by_id(id):
 
 def set_user_passed(id):
     user = User.query.filter(User.id == id).first()
-#    user.user_passed = True
+    user.user_passed = True
     db.session.add(user)
     db.session.commit()
 
     return True
 
+
 def get_next_active_user(user_id, room_id):
     users_in_room_not_passed = db.session.query(User.id).filter(User.room_id == room_id, User.user_passed == False).order_by(User.id).all()
-    # print(users_in_room_not_passed)
+    print(users_in_room_not_passed)
     current_index = users_in_room_not_passed.index((user_id,))
+    print(current_index)
     ship_phase = False
     if len(users_in_room_not_passed) <= 2:
         ship_phase = True
@@ -127,6 +140,10 @@ def get_equipment_by_name(name):
     equipment = Equipment.query.filter(Equipment.name == name).first()
     return equipment.id
 
+def get_equipment_by_id(id):
+    equipment = Equipment.query.filter(Equipment.id == id).first()
+    return equipment.name
+
 ########### Enemy ###########
 
 def create_enemy(name, strength):
@@ -169,6 +186,16 @@ def get_random_card(game_id, d_type):
         card = -1
     # print(card)
     return card
+
+def cards_in_deck(game_id, d_type):
+    cards = Deck.query.filter(Deck.game_id == game_id, Deck.deck_type == d_type ).all()
+    total = 0
+
+    for card in cards:
+        total = total + card.in_deck
+
+    return total
+
 
 def remove_card(game_id, enemy_id, deck_type):
     card = Deck.query.filter(Deck.game_id == game_id,

@@ -146,6 +146,30 @@ body {
     border: #124d77 solid 5px;
 }
 
+#equipment_0 {
+    filter: none;
+}
+
+#equipment_1 {
+    filter: none;
+}
+
+#equipment_2 {
+    filter: none;
+}
+
+#equipment_3 {
+    filter: none;
+}
+
+#equipment_4 {
+    filter: none;
+}
+
+#equipment_5 {
+    filter: none;
+}
+
 .overlay {
     position: absolute;
     top: 0;
@@ -375,7 +399,8 @@ break{
 
 .modal-header {
     padding: 2px 16px;
-    background-color: #5cb85c;
+    background: rgb(6,44,67);
+    background: linear-gradient(90deg, rgba(6,44,67,0.8) 0%, rgba(6,44,67,0.8) 31%, rgba(85,145,169,0.8) 100%);
     color: white;
 }
 
@@ -383,8 +408,15 @@ break{
 
 .modal-footer {
     padding: 2px 16px;
-    background-color: #5cb85c;
+    background: rgb(6,44,67);
+    background: linear-gradient(90deg, rgba(6,44,67,0.8) 0%, rgba(6,44,67,0.8) 31%, rgba(85,145,169,0.8) 100%);
     color: white;
+}
+
+  /******** Start Modal overrides **********/
+
+#myModal {
+    display: block;
 }
 
   /******** Discard Modal overrides **********/

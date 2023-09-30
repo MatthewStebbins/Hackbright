@@ -18,8 +18,7 @@ socket.on('disconnect', () => {
 });
 
 socket.once('start game', () => {
-    const modal = document.getElementById("myModal");
-    modal.style.display = "none";
+    document.getElementById("myModal").style = "display: none";
 });
 
 function joinRoom(user) {
@@ -29,11 +28,21 @@ function joinRoom(user) {
 }
 
 function startGameEmit(user) {
-    console.log("In startGame")
+    // console.log("In startGame")
     socket.emit('start', user, () => {
     });
 }
 
+function discardEquipEmit(equipment_name, room_id) {
+    socket.emit('discardEquip', equipment_name, room_id, () => {
+    });
+}
+
+function increaseCount(room_id) {
+    socket.emit('addcard', room_id, () => {
+
+    });
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -63,7 +72,39 @@ function Game() {
     const [shipName, setShipName] = React.useState("");
     const [shipStrength, setShipStrength] = React.useState(0);
     const [shipEquipment, setShipEquipment] = React.useState({});
-    const [HP, setHP] = React.useState(0);
+    const [HP, setHP] = React.useState(-99);
+
+//////////////////////////////////////////////////////////////////
+//          State based sockets                                 //
+//////////////////////////////////////////////////////////////////
+
+    socket.on('pass', (response) => {
+        console.log(response.activeUser);
+        setUserActive(response.activeUser);
+        setShipPhase(response.phase);
+    });
+
+    socket.on('update deck', (update, user) => {
+        console.log(`active user is now ${user}`)
+        setUserActive(user);
+        setShipCount(shipCount + update);
+    });
+
+    socket.once('start game', () => {
+        setGameStarted(true);
+        document.getElementById("myModal").style = "display: none";
+    });
+    
+    socket.on('discard equipment', (response, user) => {
+        console.log(`discarded equipment: ${response}`);
+        document.getElementById(`equipment_${response}`).style.filter = "grayscale(100%)";
+        setUserActive(user);
+    });
+
+    socket.on('activeUser', (user) => {
+        setUserActive(user)
+    });
+
 
 // Load webpage 
     
@@ -71,18 +112,12 @@ function Game() {
         fetch('/api/load_room')
         .then((response) => response.json())
         .then((gameData) => {
-            // console.log(gameData);
-            // console.log(gameData.image);
-            // console.log(gameData.crew);
-            // console.log(gameData.equipment);
-            // console.log(gameData.activeUser);
-            // console.log(gameData.currentUser);
             setPortrait(gameData.image);
             setCrew(gameData.crew);
             setEquipment(gameData.equipment);
             setUserActive(gameData.activeUser);
             setUserCurrent(gameData.currentUser);
-            // console.log(roomLoaded)
+            setGameStarted(gameData.started);
         })
         .finally(() => {
             setRoomLoaded(true);
@@ -91,9 +126,7 @@ function Game() {
 
     React.useEffect(() => {
         if (gameStarted) {
-            console.log("before startGame");
-            startGameEmit(userCurrent);
-            console.log("after startGame");
+            startGameEmit(userCurrent);;
         }
     }, [gameStarted])
 
@@ -110,7 +143,7 @@ function Game() {
                 equipmentList.push(
                     <div key={`div_${index}`} id="flex-cards">
                         <div className="container">
-                            <img key={index} className="equipment_cards" id={`equipment_${index}`} src={`/static/img/${crew}/equipment_${index}.png`}/>
+                            <img key={index} className="equipment_cards" id={`equipment_${equipment[item].name}`} src={`/static/img/${crew}/equipment_${equipment[item].name}.png`}/>
                             <div className="overlay">
                                 <div className="text">{text}</div>
                             </div>
@@ -143,14 +176,26 @@ function Game() {
     }
 
     function Portrait(props) {
-        const {portrait, crew} = props;
-        return (
-        <div id ="portrait">
-            <img id="portrait_img" src={portrait}/>
-            <h2 id="portrait_name">{crew}</h2>
-        </div>
+        const {portrait, crew, hp} = props;
+        if(hp == -99) {
+            return (
+            <div id ="portrait">
+                <img id="portrait_img" src={portrait}/>
+                <h2 id="portrait_name">{crew}</h2>
+            </div>
         );
+        }
+        else {
+            return (
+                <div id ="portrait">
+                    <img id="portrait_img" src={portrait}/>
+                    <h2 id="portrait_name">{crew} HP:{hp}</h2>
+                </div>
+                );  
+        }
     }
+
+    // Buttons and called functions
 
     function Buttons(props) {
         const {drawCardImage} = props;
@@ -176,19 +221,22 @@ function Game() {
     }
 
     function addCard() {
-        fetch(`/api/add/${drawCardName}`, {
-            Method: 'POST'
-        })
-        .then((response) => response.json())
-        .then((responseData) => {
-            console.log(responseData.success);
-            if(responseData.success === true) {
-                setUserActive(responseData.activeUser);
-                setDrawCardImage("/static/img/deck_back_1.jpg");
-                setDrawCardName("");
-                setDrawCardStrength("");                
-            }          
-        });
+        if(userCurrent == userActive) {
+            fetch(`/api/add/${drawCardName}`, {
+                Method: 'POST'
+            })
+            .then((response) => response.json())
+            .then((responseData) => {
+                console.log(responseData.success);
+                if(responseData.success === true) {
+                    setUserActive(responseData.activeUser);
+                    setDrawCardImage("/static/img/deck_back_1.jpg");
+                    setDrawCardName("");
+                    setDrawCardStrength("");
+                    increaseCount(responseData.room_id);                
+                }          
+            });
+        }
     }
 
     function discardCard() {
@@ -197,6 +245,41 @@ function Game() {
             console.log(discardEquipment);
         }
     }
+
+    function drawCard() {
+        // console.log('in drawCard()')
+        if(userCurrent == userActive) {
+            fetch('/api/draw_card')
+            .then((response) => response.json())
+            .then((cardData) => {
+                // console.log(cardData.image);
+                setDrawCardImage(cardData.image);
+                // console.log(cardData.name);
+                setDrawCardName(cardData.name);
+                // console.log(cardData.strength);
+                setDrawCardStrength(cardData.strength);
+            });
+        }
+    }
+    
+    function passTurn() {
+        // alert('You just passed your turn!');
+        if(userCurrent == userActive) {
+            fetch('/api/pass')
+            .then((response) => response.json())
+            .then((responseData) => {
+                // console.log(responseData.success);
+                if(responseData.success) {
+                    setUserActive(responseData.activeUser);
+                }
+                if(responseData.shipPhase) {
+                    startShip()
+                }
+            });
+        }
+    }
+
+    // Deck functions
 
     function DrawDeck(props) {
         const {image, strength, name} = props;
@@ -228,37 +311,6 @@ function Game() {
         );
     }
 
-    function drawCard() {
-        // console.log('in drawCard()')
-            fetch('/api/draw_card')
-            .then((response) => response.json())
-            .then((cardData) => {
-                // console.log(cardData.image);
-                setDrawCardImage(cardData.image);
-                // console.log(cardData.name);
-                setDrawCardName(cardData.name);
-                // console.log(cardData.strength);
-                setDrawCardStrength(cardData.strength);
-            });
-    }
-    
-    function passTurn() {
-        // alert('You just passed your turn!');
-        if(userCurrent == userActive) {
-            fetch('/api/pass')
-            .then((response) => response.json())
-            .then((responseData) => {
-                // console.log(responseData.success);
-                if(responseData.success) {
-                    setUserActive(responseData.activeUser);
-                }
-                if(responseData.shipPhase) {
-                    startShip()
-                }
-            });
-        }
-    }
-
     function Modal(props) {
         const {userActive, userCurrent, gameStarted} = props;
         if(!gameStarted) {
@@ -270,12 +322,23 @@ function Game() {
                                 <h2>Press start when all users have joined</h2>
                             </div>
                             <div className="modal-body">
-                                <p>Need to add some helpful text here</p>
-                                <p>Some other text...</p>
+                            <center>
+                            <div class="rules">
+                                <center>
+                                    <h2> How to play: </h2>
+                                    <p><h4>How to win:</h4><br/>
+                                    You win by defeating all the aliens in two ships. You do this by being the last player to not pass and using the equipment the crew person has left after the bidding phase.<br/>
+                                    Or<br/>
+                                    By being the last player to not fail two ships</p>
+                                    
+                                    <p><h4>How to Loss:</h4><br/>
+                                    You can loss by another player winning or by failing twice when going into ships.</p>
+                                </center>
+                            </div>
+                            </center>
                             </div>
                             <div className="modal-footer">
-                                <a href="#" className="myButtonStart" onClick={startGame}>Start</a>
-                                <h3>Modal Footer</h3>
+                                <button className="myButton2" onClick={startGame}>Start</button>
                             </div>
                         </div>
                     </div>
@@ -301,7 +364,7 @@ function Game() {
             }
         }
         return (
-            <div></div>
+            <div id="myModal"></div>
         )
     }
 
@@ -344,8 +407,8 @@ function Game() {
                             
                         </div>
                         <div className="modal-footer">
-                            <button type="submit">Submit</button>
-                            <a href="#" className="myButtonDiscard" onClick={cancelDiscard}>Cancel</a>      
+                            <button className="myButton2" type="submit">Submit</button>
+                            <button className="myButton2" onClick={cancelDiscard}>Cancel</button>      
                         </div>
                     </form>
                     </div>
@@ -375,10 +438,11 @@ function Game() {
             if(responseData.success === true) {
                 setUserActive(responseData.activeUser);
                 setDiscardEquipment(false);
-                document.querySelector(`#equipment_${responseData.equipment_id - 1}`).style.setProperty("filter", "grayscale(100%)")
+                document.getElementById(`equipment_${responseData.equipment_name}`).style.filter = "grayscale(100%)";
                 setDrawCardImage("/static/img/deck_back_1.jpg");
                 setDrawCardName("");
-                setDrawCardStrength("");  
+                setDrawCardStrength("");
+                discardEquipEmit(responseData.equipment_name, responseData.room_id);
             }          
         });
 
@@ -418,12 +482,12 @@ function Game() {
                 );
             }
             for(const item in shipEquipment) {
-                console.log(shipEquipment[item]);
+                console.log(shipEquipment[item].id);
                 const text = shipEquipment[item].discription;
                 equipmentList.push(
                     <div key={`div_${index}`} id="flex-cards">
                         <div className="container">
-                            <img key={index} className="equipment_cards" id={`equipment_${index}`} src={`/static/img/${crew}/equipment_${index}.png`}/>
+                            <img key={index} className="equipment_cards" id={`equipment_${index}`} src={`/static/img/${crew}/equipment_${shipEquipment[item].name}.png`}/>
                             <div className="overlay">
                                 <div className="text">{text}</div>
                             </div>
@@ -440,8 +504,12 @@ function Game() {
                         <div className="modal-header">
                             <h2>Welcome to the Siren - Can you make it?</h2>
                         </div>
-                        <div className="modal-body">
+                        <div className="modal-body"> 
                             <div className="modal-equipment">
+                                <div id="deck-container">
+                                    <Portrait portrait={portrait} crew={crew} hp={HP} />
+                                    <DrawDeck image ={shipImage} strength={shipStrength} name={shipName}/>
+                                </div>
                             <React.Fragment>
                                 {equipmentList}
                             </React.Fragment>
@@ -508,6 +576,9 @@ function Game() {
         fetch(url)
         .then((response) => response.json())
         .then((responseData) => {
+            if(responseData.state != '') {
+                window.location.replace(`http://127.0.0.1:5000/${responseData.state}`);
+            }
             setShipImage(responseData.image)
             setShipName(responseData.name)
             setShipStrength(responseData.strength);
@@ -526,7 +597,7 @@ function Game() {
         <React.Fragment>
             <div className="main">
                 <div className="game">
-                    <Portrait portrait={portrait} crew={crew} />
+                    <Portrait portrait={portrait} crew={crew} hp={HP} />
                     <Equipment equipment={equipment} roomLoaded={roomLoaded} />
                     <div id="deck-container">
                         <Buttons drawCardImage={drawCardImage} />

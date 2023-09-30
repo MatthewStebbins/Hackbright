@@ -41,7 +41,7 @@ def create_room():
     db.session.add(room)
     db.session.commit()
     user = check_user(user_id, room.id, role.Host)
-    room.games.active_user = user_id
+    room.games.active_user = user.id
     db.session.add(room)
     db.session.commit()    
     session['room'] = room.id
@@ -122,7 +122,8 @@ def load_room():
                     crew=room.games.adventurers.name,
                     equipment=equipment,
                     activeUser=room.games.active_user,
-                    currentUser=session.get('user'))
+                    currentUser=session.get('user'),
+                    started=room.games.started)
 
 @app.route('/api/draw_card')
 def draw_card():
@@ -143,10 +144,9 @@ def passTurn():
     room_id = session.get('room')
     # print(user_id)
 
-
-    success = crud.set_user_passed(user_id)
     (active_user, ship_phase) = crud.get_next_active_user(user_id, room_id)
-
+    success = crud.set_user_passed(user_id)
+    socketio.emit('pass', {'activeUser': active_user, 'phase':ship_phase}, to=room_id)
     return jsonify(success=success, activeUser=active_user, shipPhase=ship_phase)
 
 @app.route('/api/add/<name>', methods={'POST', 'GET'})
@@ -163,7 +163,7 @@ def addCard(name):
     success = crud.add_card(game_id, enemy_id, deck_type.Ship)
     (active_user, ship_phase) = crud.get_next_active_user(user_id, room_id)
 
-    return jsonify(success=success, activeUser=active_user)
+    return jsonify(success=success, activeUser=active_user, room_id=room_id)
 
 @app.route('/api/discard_equipment/<equipment_name>')
 def discardEquipment(equipment_name):
@@ -177,7 +177,10 @@ def discardEquipment(equipment_name):
     success = crud.discard_equipment(game_id, equipment_id)
     active_user = crud.get_next_active_user(user_id, room_id)
 
-    return jsonify(success=success, equipment_id=equipment_id, activeUser=active_user)
+    return jsonify(success=success, 
+                    equipment_name=equipment_name, 
+                    activeUser=active_user,
+                    room_id=room_id)
 
 @app.route('/api/ship/start')
 def startship():
@@ -186,7 +189,7 @@ def startship():
     game_id = room.game_id
 
     card = crud.get_random_card(game_id, deck_type.Ship)
-    # crud.remove_card(game_id, card.enemy_id, deck_type.Ship)
+    crud.remove_card(game_id, card.enemy_id, deck_type.Ship)
 
     effective_active_equipment = crud.get_active_equipment_by_enemy_id(game_id, card.enemies.id)
     print(effective_active_equipment)
@@ -217,9 +220,9 @@ def combat():
     # Check if game is over
 
     hp = crud.get_total_hp(room)
-    state = win_loss(hp)
+    state = win_loss(hp, game_id)
     if state != '':
-        return state
+        return jsonify(state=state)
     
     # If game is not over load next enemy
 
@@ -228,7 +231,8 @@ def combat():
 
     effective_active_equipment = crud.get_active_equipment_by_enemy_id(game_id, card.enemies.id)
 
-    return jsonify(image='/static/img/Enemies/test.png',
+    return jsonify(state=state,
+                    image='/static/img/Enemies/test.png',
                     name=card.enemies.name,
                     strength=card.enemies.strength,
                     hp=hp,
@@ -286,10 +290,10 @@ def win_loss(hp, game_id):
     return state
 
 def loss():
-    return redirect('/loss')
+    return 'loss'
 
 def win():
-    return redirect('/win')
+    return '/win'
 
 
 ############################################
@@ -325,8 +329,34 @@ def on_leave(room):
 def start_game(user_id):
     print('Starting game')
     user = crud.get_user_by_id(user_id)
+    game_id = user.rooms.game_id
+    crud.start_game(game_id)
     room_id = user.room_id
     emit('start game', to=room_id)
+
+@socketio.on('discardEquip')
+def discard(equipment_name, room_id):
+    user = crud.get_active_user(room_id)    
+    emit('discard equipment',(equipment_name, user), to=room_id)
+
+@socketio.on('addcard')
+def add_card(room_id):
+    user = crud.get_active_user(room_id)
+    emit('update deck', (1, user), to=room_id)
+
+@socketio.on('removecard')
+def add_card(room_id):
+    user = crud.get_active_user(room_id)
+    emit('update deck', -1, user, to=room_id)
+
+@socketio.on('startCombat')
+def start_combat(room_id):
+    user = crud.get_active_user(room_id)
+    emit('activeUser', user, to=room_id)
+
+# @socketio.on('pass')
+# def pass_User(active_user, ship_phase, room_id):
+#     emit('pass', active_user, ship_phase, to=room_id)
 
 if __name__ == '__main__':
     connect_to_db(app)

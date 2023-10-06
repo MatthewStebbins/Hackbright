@@ -66,7 +66,6 @@ class Adventurer(db.Model):
     name = db.Column(db.String(12),
                     nullable=False,
                     unique=True) # the name of the adventurer
-    # picture = db.Column(db.String, nullable=False)  # path to the .png of the adventurer
     health = db.Column(db.Integer, nullable=False)  # base health 
 
     games = db.relationship('Game', back_populates='adventurers')

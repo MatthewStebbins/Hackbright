@@ -54,8 +54,6 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    max-width: 90em;
-    min-width: 90em;
     overflow-wrap: break-word;
     padding: 1em;
     padding-left: 20em;
@@ -140,21 +138,25 @@ body {
 
 }
 
+.grey{
+    filter: grayscale(100%);
+}
+
 .equipment_cards {
     width: 240px;
     height: 300px;
     border: #124d77 solid 5px;
 }
 
-#equipment_0 {
-    filter: none;
-}
+/* #equipment_Laser_Rifle {
+    opacity: 100;
+} */
 
-#equipment_1 {
+/* #equipment_Helmet {
     filter: none;
-}
+} */
 
-#equipment_2 {
+/* #equipment_2 {
     filter: none;
 }
 
@@ -168,7 +170,7 @@ body {
 
 #equipment_5 {
     filter: none;
-}
+} */
 
 .overlay {
     position: absolute;
@@ -404,7 +406,9 @@ break{
     color: white;
 }
 
-.modal-body {padding: 2px 16px;}
+.modal-body {
+    padding: 2px 16px;
+}
 
 .modal-footer {
     padding: 2px 16px;
@@ -438,4 +442,17 @@ break{
     font-family: "Syne Mono", monospace;
     font-size: 100%;
     color: #ced7e0;
+}
+
+
+#ship-container {
+    display: flex;
+    justify-content: space-between;
+    width: 80%;
+    align-items: baseline;
+    position: relative;
+    text-align: center;
+    color: gold;
+    font-size: 3em;
+    
 }

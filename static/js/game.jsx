@@ -1,3 +1,4 @@
+
 ////////////////////////////////////////////////////////////////////////////////////////////////
 //                 Socket code                                                                //
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -55,6 +56,7 @@ function Game() {
     const [portrait, setPortrait] = React.useState("");
     const [crew, setCrew] = React.useState("");
     const [equipment, setEquipment] = React.useState({});
+    const [equipGrey, setEquipGrey] = React.useState([]);
     const [roomLoaded, setRoomLoaded] = React.useState(false);
     const [gameStarted, setGameStarted] = React.useState(false);
     const [drawCardImage, setDrawCardImage] = React.useState("/static/img/deck_back_1.jpg");
@@ -73,6 +75,8 @@ function Game() {
     const [shipStrength, setShipStrength] = React.useState(0);
     const [shipEquipment, setShipEquipment] = React.useState({});
     const [HP, setHP] = React.useState(-99);
+
+    const [temp, settemp] = React.useState(0);
 
 //////////////////////////////////////////////////////////////////
 //          State based sockets                                 //
@@ -96,8 +100,11 @@ function Game() {
     });
     
     socket.on('discard equipment', (response, user) => {
-        console.log(`discarded equipment: ${response}`);
-        document.getElementById(`equipment_${response}`).style.filter = "grayscale(100%)";
+        // console.log(response);
+        document.getElementById(`equipment_${response.replace(" ", "_")}`).classList.add("grey");
+        setEquipGrey(equipGrey.concat([response]));
+        // console.log(equipGrey);
+        // localStorage.setItem(`equipment_${response.replace(" ", "_")}`, "grayscale(100%)");
         setUserActive(user);
     });
 
@@ -126,9 +133,10 @@ function Game() {
 
     React.useEffect(() => {
         if (gameStarted) {
-            startGameEmit(userCurrent);;
+            startGameEmit(userCurrent);
         }
     }, [gameStarted])
+
 
     function Equipment() {
         const equipmentList = [];
@@ -138,18 +146,34 @@ function Game() {
         if(roomLoaded) {
             joinRoom(userCurrent);
             for(const item in equipment) {
-            //    console.log(equipment[item]);
+                // console.log(equipment[item].name);
                 const text = equipment[item].discription;
-                equipmentList.push(
-                    <div key={`div_${index}`} id="flex-cards">
-                        <div className="container">
-                            <img key={index} className="equipment_cards" id={`equipment_${equipment[item].name}`} src={`/static/img/${crew}/equipment_${equipment[item].name}.png`}/>
-                            <div className="overlay">
-                                <div className="text">{text}</div>
+                // const element = document.createElement(`equipment_${equipment[item].name.replace(" ", "_")}`);
+                // element.style.filter = "none";
+                if (equipGrey.indexOf(equipment[item].name) > -1) {
+                    equipmentList.push(
+                        <div key={`div_${index}`} id="flex-cards">
+                            <div className="container">
+                                <img key={index} className="equipment_cards grey" id={`equipment_${equipment[item].name.replace(" ", "_")}`} src={`/static/img/${crew}/equipment_${equipment[item].name}.png`}/>
+                                <div className="overlay">
+                                    <div className="text">{text}</div>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    );
+                }
+                else{
+                    equipmentList.push(
+                        <div key={`div_${index}`} id="flex-cards">
+                            <div className="container">
+                                <img key={index} className="equipment_cards" id={`equipment_${equipment[item].name.replace(" ", "_")}`} src={`/static/img/${crew}/equipment_${equipment[item].name}.png`}/>
+                                <div className="overlay">
+                                    <div className="text">{text}</div>
+                                </div>
+                            </div>
+                        </div>
                 );
+                }
                 index++; 
             }
         }
@@ -260,6 +284,7 @@ function Game() {
                 setDrawCardStrength(cardData.strength);
             });
         }
+        settemp(temp+1);
     }
     
     function passTurn() {
@@ -323,15 +348,15 @@ function Game() {
                             </div>
                             <div className="modal-body">
                             <center>
-                            <div class="rules">
+                            <div className="rules">
                                 <center>
                                     <h2> How to play: </h2>
-                                    <p><h4>How to win:</h4><br/>
+                                    <p>How to win:<br/>
                                     You win by defeating all the aliens in two ships. You do this by being the last player to not pass and using the equipment the crew person has left after the bidding phase.<br/>
                                     Or<br/>
                                     By being the last player to not fail two ships</p>
                                     
-                                    <p><h4>How to Loss:</h4><br/>
+                                    <p>How to Loss:<br/>
                                     You can loss by another player winning or by failing twice when going into ships.</p>
                                 </center>
                             </div>
@@ -438,7 +463,7 @@ function Game() {
             if(responseData.success === true) {
                 setUserActive(responseData.activeUser);
                 setDiscardEquipment(false);
-                document.getElementById(`equipment_${responseData.equipment_name}`).style.filter = "grayscale(100%)";
+                // document.getElementById(`equipment_${responseData.equipment_name.replace(" ", "_")}`).style.filter = "grayscale(100%)";
                 setDrawCardImage("/static/img/deck_back_1.jpg");
                 setDrawCardName("");
                 setDrawCardStrength("");
@@ -506,7 +531,7 @@ function Game() {
                         </div>
                         <div className="modal-body"> 
                             <div className="modal-equipment">
-                                <div id="deck-container">
+                                <div id="ship-container">
                                     <Portrait portrait={portrait} crew={crew} hp={HP} />
                                     <DrawDeck image ={shipImage} strength={shipStrength} name={shipName}/>
                                 </div>

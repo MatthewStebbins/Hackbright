@@ -50,7 +50,7 @@ body {
 }
 .rules {
     background: rgb(6,44,67);
-    background: linear-gradient(0deg, rgba(6,44,67,0.9) 0%, rgba(6,44,67,0.9) 31%, rgba(85,145,169,0.9) 100%);
+    background: linear-gradient(0deg, rgba(6,44,67,0.9) 0%, #062c43e6 31%, #5591a9e6 100%);
     display: flex;
     justify-content: center;
     align-items: center;

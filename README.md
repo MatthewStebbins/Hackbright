@@ -35,10 +35,10 @@
 ### :art: Color Reference
 | Color | Hex |
 | --------------- | ---------------------------------------------------------------- |
-| Primary Color | ![#214f8f](https://via.placeholder.com/10/214f8f?text=+) #214f8f |
-| Secondary Color | ![#393E46](https://via.placeholder.com/10/393E46?text=+) #393E46 |
-| Accent Color | ![#00ADB5](https://via.placeholder.com/10/00ADB5?text=+) #00ADB5 |
-| Text Color | ![#EEEEEE](https://via.placeholder.com/10/EEEEEE?text=+) #EEEEEE |
+| Primary Color | ![#062c43](https://via.placeholder.com/10/062c43?text=+) #062c43 |
+| Secondary Color | ![#5591a9](https://via.placeholder.com/10/5591a9?text=+) #5591a9 |
+| Accent Color | ![#ffd700](https://via.placeholder.com/10/ffd700?text=+) #ffd700 |
+| Text Color | ![#ced7e0](https://via.placeholder.com/10/ced7e0?text=+) #ced7e0 |
 
 ## :toolbox: Getting Started
 

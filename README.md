@@ -22,11 +22,15 @@
 <li><a href="https://react.dev/">React</a></li>
 <li><a href="https://developer.mozilla.org/en-US/docs/Web/javascript">Javascript</a></li>
 <li><a href="https://socket.io/">SocketIO</a></li>
+<li><a href="https://jinja.palletsprojects.com/en/3.1.x/">Jinja</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/HTML">HTML </a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/CSS">CSS</a></li>
 </ul> </details>
 <details> <summary>Server</summary> <ul>
 <li><a href="https://flask-socketio.readthedocs.io/en/latest/">Flask-SocketIO</a></li>
 <li><a href="https://flask.palletsprojects.com/en/3.0.x/">Flask </a></li>
 <li><a href="https://flask-sqlalchemy.palletsprojects.com/en/3.1.x/">Flask-SQLAlchemy</a></li>
+<li><a href="https://www.python.org/">Python</a></li>
 </ul> </details>
 <details> <summary>Database</summary> <ul>
 <li><a href="https://www.postgresql.org/">PostgreSQL</a></li>

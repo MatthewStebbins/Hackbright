@@ -3,6 +3,8 @@
 <img src=https://github.com/MatthewStebbins/Hackbright/blob/socket/static/img/Main%20image.png alt="logo" width=854 height=480 />
 
 <h1>Welcome to The Siren </h1>
+<p>Welcome to The Siren is a multiple player web game where players take turns adding cards to the the Ship deck or choosing a piece of equipment. If a player does not think they can beat the ship they can pass. Whoever wins twice before losings twice wins overall.</p>
+
 <h4> <span> · </span> <a href="https://github.com/MatthewStebbins/Hackbright/blob/master/README.md"> Documentation </a> <span> · </span> <a href="https://github.com/MatthewStebbins/Hackbright/issues"> Report Bug </a> <span> · </span> <a href="https://github.com/MatthewStebbins/Hackbright/issues"> Request Feature </a> </h4>
 
 
@@ -38,9 +40,88 @@
 | Accent Color | ![#00ADB5](https://via.placeholder.com/10/00ADB5?text=+) #00ADB5 |
 | Text Color | ![#EEEEEE](https://via.placeholder.com/10/EEEEEE?text=+) #EEEEEE |
 
+## :toolbox: Getting Started
+
+### :bangbang: Prerequisites
+
+- Run PowerShell as an Administrator
+- Install WSL
+```bash
+wsl --install
+```
+- Launch Ubuntu from start
+- In the Ubuntu program, type the following update and upgrade packages
+```bash
+sudo apt update && sudo apt upgrade
+```
+- Using WSL 2
+```bash
+sudo apt install -y build-essential software-properties-common python3-pip python3-venv python3-dev
+```
+- Upgrade Python
+```bash
+sudo apt install -y
+```
+
+```bash
+sudo add-apt-repository -y ppa:deadsnakes/ppa
+```
+
+```bash
+sudo apt update
+```
+
+```bash
+sudo apt install -y python3.9 python3.9-dev python3.9-distutils
+```
+- Install Python development tools: virtualenv
+```bash
+python3.9 -m pip install virtualenv ipython
+```
+
+```bash
+ln -s $(which python3.9) ~/.local/bin/python3
+```
+- Install Node.js
+```bash
+sudo apt install -y nodejs
+```
+- Install PostgreSQL
+```bash
+sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+```
+
+```bash
+wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+```
+
+```bash
+sudo apt update
+```
+
+```bash
+sudo apt install -y postgresql-13 postgresql-client-13 postgresql-server-dev-13 libpq-dev
+```
+- Set up PostgreSQL
+```bash
+sudo pg_ctlcluster 13 main start
+```
+
+```bash
+sudo -u postgres psql --command "CREATE USER $(whoami) WITH SUPERUSER;"
+```
+
+```bash
+createdb $(whoami)
+```
+- Clone or download repository from GitHub
+```bash
+gh repo clone MatthewStebbins/Hackbright
+```
+
+
 ## :gem: Acknowledgements
 
 Use this section to mention useful resources and libraries that you have used in your projects.
-
 
 - [Thank you to Hackbright for starting this project](https://hackbrightacademy.com/)

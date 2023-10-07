@@ -211,7 +211,7 @@ body {
     align-items: flex-end;
     position: relative;
     text-align: center;
-    color: gold;
+    color: #ffd700;
     font-size: 3em;
     
 }
@@ -220,7 +220,7 @@ body {
     margin: 40px;
     width: 300px;
     height: 400px;
-    border: gold 2px solid;
+    border: #ffd700 2px solid;
 }
 
 .top-right {

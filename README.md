@@ -36,6 +36,9 @@
 <li><a href="https://www.postgresql.org/">PostgreSQL</a></li>
 </ul> </details>
 
+### :dart: Features
+- Kanban of intended features: https://trello.com/b/NgxyOInN/the-siren
+
 ### :art: Color Reference
 | Color | Hex |
 | --------------- | ---------------------------------------------------------------- |
